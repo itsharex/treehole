@@ -1,4 +1,4 @@
-module github.com/Jazee6/treehole/account
+module github.com/Jazee6/treehole
 
 go 1.20
 

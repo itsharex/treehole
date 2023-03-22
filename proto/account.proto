@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "github.com/Jazee6/treehole/cmd/account/rpc;rpc";
+
+package proto;
+
+service AccountService {
+  rpc AccountRegister(RegisterRequest) returns (RegisterResponse) {}
+}
+
+message RegisterRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message RegisterResponse {
+
+}

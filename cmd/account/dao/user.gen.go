@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"github.com/Jazee6/treehole/account/pkg/model"
+	"github.com/Jazee6/treehole/cmd/account/model"
 )
 
 func newUser(db *gorm.DB, opts ...gen.DOOption) user {

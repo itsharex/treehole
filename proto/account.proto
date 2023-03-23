@@ -8,11 +8,22 @@ service AccountService {
   rpc AccountRegister(RegisterRequest) returns (RegisterResponse) {}
 }
 
+enum Code {
+  OK = 0;
+  ERROR = -1;
+}
+
+message BaseResponse {
+  int32 code = 1;
+  string msg = 2;
+}
+
 message RegisterRequest {
-  string username = 1;
-  string password = 2;
+  string nickname = 1;
+  string email = 2;
+  string password = 3;
 }
 
 message RegisterResponse {
-
+  BaseResponse base = 1;
 }

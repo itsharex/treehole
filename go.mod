@@ -3,11 +3,19 @@ module github.com/Jazee6/treehole
 go 1.20
 
 require (
+	github.com/gin-gonic/gin v1.9.0
+	github.com/spf13/viper v1.15.0
+	gorm.io/driver/mysql v1.4.7
+	gorm.io/gen v0.3.21
+	gorm.io/gorm v1.24.6
+	gorm.io/plugin/dbresolver v1.4.1
+)
+
+require (
 	github.com/bytedance/sonic v1.8.5 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.9.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
@@ -29,7 +37,6 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.15.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
@@ -44,9 +51,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/datatypes v1.1.1 // indirect
-	gorm.io/driver/mysql v1.4.7 // indirect
-	gorm.io/gen v0.3.21 // indirect
-	gorm.io/gorm v1.24.6 // indirect
 	gorm.io/hints v1.1.1 // indirect
-	gorm.io/plugin/dbresolver v1.4.1 // indirect
 )

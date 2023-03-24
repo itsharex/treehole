@@ -8,14 +8,9 @@ service AccountService {
   rpc AccountRegister(RegisterRequest) returns (RegisterResponse) {}
 }
 
-enum Code {
-  OK = 0;
-  ERROR = -1;
-}
-
-message BaseResponse {
-  int32 code = 1;
-  string msg = 2;
+enum Code{
+  Success = 0;
+  ErrUserExist = 10000;
 }
 
 message RegisterRequest {
@@ -25,5 +20,6 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-  BaseResponse base = 1;
+  Code code = 1;
+  string token = 2;
 }

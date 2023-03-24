@@ -1,3 +1,7 @@
 mysql:
   dsn:
     account: "root:root@tcp(127.0.0.1:3306)/account?charset=utf8mb4&parseTime=True&loc=Local"
+
+token:
+  expire: 720 #hours
+  secret: "12255C8AA7FAE430EA75181CCF5EE94F"

@@ -1,12 +1,24 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	_ "github.com/Jazee6/treehole/pkg/configs"
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+)
 
 func main() {
 	g := gin.New()
 	g.Use(gin.Logger())
 	g.Use(gin.Recovery())
-	err := g.Run(":8080")
+
+	initRouter(g)
+
+	err := g.SetTrustedProxies(nil)
+	if err != nil {
+		return
+	}
+
+	err = g.Run(viper.GetString("server.gateway"))
 	if err != nil {
 		return
 	}

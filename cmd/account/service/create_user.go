@@ -13,11 +13,7 @@ import (
 
 var q = dao.Q.User
 
-type CreateUserService struct {
-	rpc.UnimplementedAccountServiceServer
-}
-
-func (c *CreateUserService) mustEmbedUnimplementedAccountServiceServer() {}
+type CreateUserService struct{}
 
 func (c *CreateUserService) AccountRegister(_ context.Context, request *rpc.RegisterRequest) (*rpc.RegisterResponse, error) {
 	user, err := q.Where(q.Email.Eq(request.Email)).Take()

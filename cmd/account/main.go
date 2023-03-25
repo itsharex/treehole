@@ -22,7 +22,7 @@ func main() {
 	}
 	dao.SetDefault(open)
 
-	listen, err := net.Listen("tcp", ":8081")
+	listen, err := net.Listen("tcp", viper.GetString("server.account"))
 	if err != nil {
 		return
 	}

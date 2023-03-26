@@ -9,3 +9,11 @@ token:
 server:
   gateway: ":8088"
   account: ":8081"
+
+email:
+  host: "smtp.gmail.com"
+  port: 587
+  username: "your email"
+  password: "your password"
+  from: "your email"
+  fromName: "your name"

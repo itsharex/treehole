@@ -1,6 +1,8 @@
 package handler
 
 import (
+	pb "github.com/Jazee6/treehole/cmd/account/rpc"
+	"github.com/Jazee6/treehole/cmd/api/rpc"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +19,20 @@ func Register(c *gin.Context) {
 		Error(c, ErrValidate)
 		return
 	}
-	Success(c, nil)
+	resp, err := rpc.Client.AccountRegister(c, &pb.RegisterRequest{
+		Nickname: req.NickName,
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		Error(c, ErrServer)
+		return
+	}
+	if resp.Code != pb.Code_Success {
+		Error(c, ErrUserExist)
+		return
+	}
+	Success(c, resp)
 }
 
 func Login(c *gin.Context) {

@@ -15,7 +15,9 @@ func NewErr(code int, message string) *Err {
 }
 
 var (
-	ErrValidate = NewErr(10000, "validate error")
+	ErrValidate  = NewErr(10000, "validate error")
+	ErrServer    = NewErr(10001, "server error")
+	ErrUserExist = NewErr(10002, "user exist")
 )
 
 type Response struct {

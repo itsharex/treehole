@@ -1,29 +1,22 @@
 package rpc
 
 import (
-	context "context"
 	pb "github.com/Jazee6/treehole/cmd/account/rpc"
 	"google.golang.org/grpc"
-	"time"
 )
 
-var client pb.AccountServiceClient
+var Client pb.AccountServiceClient
 
-func CallCreateUser() {
+func init() {
 	dial, err := grpc.Dial(":8081", grpc.WithInsecure())
 	if err != nil {
 		return
 	}
-	defer func(dial *grpc.ClientConn) {
-		err := dial.Close()
-		if err != nil {
 
-		}
-	}(dial)
+	//dial.Close()
 
-	client = pb.NewAccountServiceClient(dial)
+	Client = pb.NewAccountServiceClient(dial)
 
-	_, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
+	//_, cancel := context.WithTimeout(context.Background(), time.Second)
+	//defer cancel()
 }

@@ -6,6 +6,7 @@ package proto;
 
 service AccountService {
   rpc AccountRegister(RegisterRequest) returns (RegisterResponse) {}
+  rpc SendCaptcha(SendCaptchaRequest) returns (SendCaptchaResponse) {}
 }
 
 enum Code{
@@ -22,4 +23,12 @@ message RegisterRequest {
 message RegisterResponse {
   Code code = 1;
   string token = 2;
+}
+
+message SendCaptchaRequest {
+  string email = 1;
+}
+
+message SendCaptchaResponse {
+  Code code = 1;
 }

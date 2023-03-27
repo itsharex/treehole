@@ -1,3 +1,10 @@
+name: 树洞
+
+register:
+  captcha:
+    content: "欢迎您注册${name}，您的验证码是${code}，请在${expire}分钟内完成注册。"
+    expire: 10 #minutes
+
 mysql:
   dsn:
     account: "root:root@tcp(127.0.0.1:3306)/account?charset=utf8mb4&parseTime=True&loc=Local"
@@ -13,7 +20,5 @@ server:
 email:
   host: "smtp.gmail.com"
   port: 587
-  username: "your email"
-  password: "your password"
-  from: "your email"
-  fromName: "your name"
+  user: "your email"
+  pass: "your password"

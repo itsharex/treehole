@@ -24,23 +24,25 @@ func main() {
 		}),
 	})
 	if err != nil {
-		return
+		panic(err)
 	}
 	dao.SetDefault(open)
 
 	utils.InitJWT()
+	utils.InitSMTP()
+	service.InitService()
 
 	addr := viper.GetString("server.account")
 	log.Println("account server listen on", addr)
 	listen, err := net.Listen("tcp", addr)
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	s := grpc.NewServer()
 	rpc.RegisterAccountServiceServer(s, &service.CreateUserService{})
 	reflection.Register(s)
 	if err := s.Serve(listen); err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 }

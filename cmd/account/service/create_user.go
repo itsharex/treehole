@@ -4,15 +4,39 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"github.com/Jazee6/treehole/cmd/account/dao"
 	"github.com/Jazee6/treehole/cmd/account/model"
 	"github.com/Jazee6/treehole/cmd/account/rpc"
 	"github.com/Jazee6/treehole/pkg/utils"
 	"gorm.io/gorm"
+	"math/rand"
+	"os"
+	"strconv"
 	"time"
 )
 
 type CreateUserService struct{}
+
+func (c *CreateUserService) SendCaptcha(_ context.Context, request *rpc.SendCaptchaRequest) (*rpc.SendCaptchaResponse, error) {
+	err := utils.SendMail(request.Email, "【"+name+"】"+"验证码", os.Expand(captchaContent, func(s string) string {
+		switch s {
+		case "code":
+			return fmt.Sprintf("%06d", rand.New(rand.NewSource(time.Now().UnixNano())).Intn(999999))
+		case "name":
+			return name
+		case "expire":
+			return strconv.Itoa(captchaExpire)
+		}
+		return ""
+	}))
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.SendCaptchaResponse{
+		Code: rpc.Code_Success,
+	}, nil
+}
 
 func (c *CreateUserService) AccountRegister(_ context.Context, request *rpc.RegisterRequest) (*rpc.RegisterResponse, error) {
 	q := dao.Q.User

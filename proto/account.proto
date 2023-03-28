@@ -11,7 +11,8 @@ service AccountService {
 
 enum Code{
   Success = 0;
-  ErrUserExist = 10000;
+  ErrUserExist = 40001;
+  ErrEmailLimit = 40002;
 }
 
 message RegisterRequest {

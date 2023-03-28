@@ -29,12 +29,8 @@ func Register(c *gin.Context) {
 		return
 	}
 	if resp.Code != pb.Code_Success {
-		Error(c, ErrUserExist)
+		Error(c, NewErr(int(resp.Code), pb.Code_name[int32(resp.Code)]))
 		return
 	}
 	Success(c, resp)
-}
-
-func Login(c *gin.Context) {
-
 }

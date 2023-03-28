@@ -9,25 +9,12 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"log"
 	"net"
 )
 
 func main() {
-	dsn := viper.GetString("mysql.dsn.account")
-	open, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.New(log.Default(), logger.Config{
-			IgnoreRecordNotFoundError: true,
-		}),
-	})
-	if err != nil {
-		panic(err)
-	}
-	dao.SetDefault(open)
-
+	dao.InitDB()
 	utils.InitJWT()
 	utils.InitSMTP()
 	service.InitService()

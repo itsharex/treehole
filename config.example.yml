@@ -4,10 +4,13 @@ register:
   captcha:
     content: "欢迎您注册${name}，您的验证码是${code}，请在${expire}分钟内完成注册。"
     expire: 10 #minutes
+  salt: "D779A3049CBC61E938E43EFF2AB026CE"
 
-mysql:
-  dsn:
-    account: "root:root@tcp(127.0.0.1:3306)/account?charset=utf8mb4&parseTime=True&loc=Local"
+db:
+  mysql:
+    dsn: "root:root@tcp(127.0.0.1:3306)/account?charset=utf8mb4&parseTime=True&loc=Local"
+  redis:
+    dsn: "redis://<user>:<password>@<host>:<port>/<db>"
 
 token:
   expire: 720 #hours
@@ -20,5 +23,6 @@ server:
 email:
   host: "smtp.gmail.com"
   port: 587
-  user: "your email"
-  pass: "your password"
+  user: "email"
+  pass: "password"
+  max: 200

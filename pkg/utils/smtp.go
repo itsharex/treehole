@@ -12,6 +12,7 @@ var (
 	user string
 	pass string
 	host string
+	name string
 )
 
 func InitSMTP() {
@@ -21,11 +22,12 @@ func InitSMTP() {
 	user = em.GetString("user")
 	pass = em.GetString("pass")
 	addr = host + ":" + port
+	name = viper.GetString("name")
 }
 
 func SendMail(to, subject, body string) error {
 	em := email.NewEmail()
-	em.From = user
+	em.From = name + "<" + user + ">"
 	em.To = []string{to}
 	em.Subject = subject
 	em.Text = []byte(body)

@@ -9,6 +9,7 @@ import (
 	"github.com/Jazee6/treehole/cmd/account/model"
 	"github.com/Jazee6/treehole/cmd/account/rpc"
 	"github.com/Jazee6/treehole/pkg/utils"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 	"math/rand"
 	"os"
@@ -18,21 +19,45 @@ import (
 
 type CreateUserService struct{}
 
-func (c *CreateUserService) SendCaptcha(_ context.Context, request *rpc.SendCaptchaRequest) (*rpc.SendCaptchaResponse, error) {
-	err := utils.SendMail(request.Email, "【"+name+"】"+"验证码", os.Expand(captchaContent, func(s string) string {
+func (c *CreateUserService) SendCaptcha(ctx context.Context, request *rpc.SendCaptchaRequest) (*rpc.SendCaptchaResponse, error) {
+	result, err := r.Get(ctx, "email").Result()
+	if err != nil && err != redis.Nil {
+		return nil, err
+	}
+	if err == redis.Nil {
+		now := time.Now()
+		year, month, day := now.Date()
+		err := r.Set(context.Background(), "email", 0, time.Date(year, month, day, 24, 0, 0, 0, time.Local).Sub(time.Now())).Err()
+		if err != nil {
+			return nil, err
+		}
+		result = ""
+	}
+	re, err := strconv.Atoi(result)
+	if err != nil {
+		return nil, err
+	}
+	if emailMax < re {
+		return &rpc.SendCaptchaResponse{
+			Code: rpc.Code_ErrEmailLimit,
+		}, nil
+	}
+	err = r.Incr(ctx, "email").Err()
+	if err != nil {
+		return nil, err
+	}
+	code := fmt.Sprintf("%06d", rand.New(rand.NewSource(time.Now().UnixNano())).Intn(999999))
+	err = utils.SendMail(request.Email, "【"+name+"】"+"验证码", os.Expand(captchaContent, func(s string) string {
 		switch s {
 		case "code":
-			return fmt.Sprintf("%06d", rand.New(rand.NewSource(time.Now().UnixNano())).Intn(999999))
-		case "name":
-			return name
-		case "expire":
-			return strconv.Itoa(captchaExpire)
+			return code
 		}
 		return ""
 	}))
 	if err != nil {
 		return nil, err
 	}
+
 	return &rpc.SendCaptchaResponse{
 		Code: rpc.Code_Success,
 	}, nil
@@ -50,7 +75,7 @@ func (c *CreateUserService) AccountRegister(_ context.Context, request *rpc.Regi
 		}, nil
 	}
 	s := sha256.New()
-	s.Write([]byte(request.Password))
+	s.Write([]byte(request.Password + salt))
 	usr := &model.User{
 		NickName:  request.Nickname,
 		Email:     request.Email,

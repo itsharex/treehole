@@ -15,11 +15,11 @@ func main() {
 
 	err := g.SetTrustedProxies(nil)
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	err = g.Run(viper.GetString("server.gateway"))
 	if err != nil {
-		return
+		panic(err)
 	}
 }

@@ -10,7 +10,6 @@ func initRouter(g *gin.Engine) {
 
 	{
 		api.POST("/register", handler.Register)
-		api.POST("/login", handler.Login)
 	}
 
 	//auth := api.Group("/auth")

@@ -10,6 +10,7 @@ type RegRequest struct {
 	NickName string `form:"nick_name"  binding:"required,max=16"`
 	Email    string `form:"email"  binding:"required,email"`
 	Password string `form:"password" binding:"required,sha256"`
+	Captcha  string `form:"captcha" binding:"required,len=6"`
 }
 
 func Register(c *gin.Context) {
@@ -23,6 +24,7 @@ func Register(c *gin.Context) {
 		Nickname: req.NickName,
 		Email:    req.Email,
 		Password: req.Password,
+		Captcha:  req.Captcha,
 	})
 	if err != nil {
 		Error(c, ErrServer)

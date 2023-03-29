@@ -13,12 +13,15 @@ enum Code{
   Success = 0;
   ErrUserExist = 40001;
   ErrEmailLimit = 40002;
+  ErrCaptchaNil = 40003;
+  ErrCaptchaErr = 40004;
 }
 
 message RegisterRequest {
   string nickname = 1;
   string email = 2;
   string password = 3;
+  string captcha = 4;
 }
 
 message RegisterResponse {

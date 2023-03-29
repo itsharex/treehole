@@ -25,4 +25,5 @@ email:
   port: 587
   user: "email"
   pass: "password"
+  replyTo: "example@gmail.com"
   max: 200

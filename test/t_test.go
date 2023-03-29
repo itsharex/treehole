@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
-	"strconv"
 	"testing"
 )
 
@@ -32,5 +31,5 @@ func TestT(t *testing.T) {
 }
 
 func TestT2(t *testing.T) {
-	println(strconv.Atoi(""))
+
 }

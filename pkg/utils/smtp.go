@@ -8,11 +8,12 @@ import (
 )
 
 var (
-	addr string
-	user string
-	pass string
-	host string
-	name string
+	addr    string
+	user    string
+	pass    string
+	host    string
+	name    string
+	replyTo string
 )
 
 func InitSMTP() {
@@ -23,6 +24,7 @@ func InitSMTP() {
 	pass = em.GetString("pass")
 	addr = host + ":" + port
 	name = viper.GetString("name")
+	replyTo = em.GetString("replyTo")
 }
 
 func SendMail(to, subject, body string) error {
@@ -31,6 +33,7 @@ func SendMail(to, subject, body string) error {
 	em.To = []string{to}
 	em.Subject = subject
 	em.Text = []byte(body)
+	em.ReplyTo = []string{replyTo}
 	err := em.Send(addr, smtp.PlainAuth("", user, pass, host))
 	if err != nil {
 		log.Fatal(err)

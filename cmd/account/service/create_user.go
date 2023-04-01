@@ -17,9 +17,9 @@ import (
 	"time"
 )
 
-type CreateUserService struct{}
+type AccountService struct{}
 
-func (c *CreateUserService) SendCaptcha(ctx context.Context, request *rpc.SendCaptchaRequest) (*rpc.SendCaptchaResponse, error) {
+func (c *AccountService) SendCaptcha(ctx context.Context, request *rpc.SendCaptchaRequest) (*rpc.SendCaptchaResponse, error) {
 	result, err := r.Get(ctx, "email").Result()
 	if err != nil && err != redis.Nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (c *CreateUserService) SendCaptcha(ctx context.Context, request *rpc.SendCa
 	}, nil
 }
 
-func (c *CreateUserService) AccountRegister(ctx context.Context, request *rpc.RegisterRequest) (*rpc.RegisterResponse, error) {
+func (c *AccountService) AccountRegister(ctx context.Context, request *rpc.RegisterRequest) (*rpc.RegisterResponse, error) {
 	result, err := r.Get(ctx, request.Email).Result()
 	if err != nil && err != redis.Nil {
 		return nil, err

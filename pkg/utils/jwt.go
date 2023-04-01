@@ -1,14 +1,18 @@
 package utils
 
 import (
+	"errors"
 	"github.com/Jazee6/treehole/cmd/account/model"
+	"github.com/Jazee6/treehole/pkg/consts"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/viper"
 	"time"
 )
 
-var exp time.Duration
-var secret string
+var (
+	exp    time.Duration
+	secret string
+)
 
 func InitJWT() {
 	h := viper.GetInt("token.expire")
@@ -26,4 +30,24 @@ func GenToken(u model.User) (string, error) {
 		return "", err
 	}
 	return signedString, nil
+}
+
+func ValidToken(token string) (jwt.MapClaims, error) {
+	tk, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !tk.Valid {
+		return nil, errors.New(consts.ErrTokenInvalid)
+	}
+	parse, err := time.Parse(time.RFC3339, tk.Claims.(jwt.MapClaims)["exp"].(string))
+	if err != nil {
+		return nil, err
+	}
+	if time.Now().After(parse) {
+		return nil, errors.New(consts.ErrExpired)
+	}
+	return tk.Claims.(jwt.MapClaims), nil
 }

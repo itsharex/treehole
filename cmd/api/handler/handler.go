@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"net/http"
 )
 
@@ -17,6 +18,8 @@ func NewErr(code int, message string) *Err {
 var (
 	ErrValidate = NewErr(40000, "validate error")
 	ErrServer   = NewErr(50000, "server error")
+	path        = "/api/v1"
+	expire      int
 )
 
 type Response struct {
@@ -39,4 +42,8 @@ func Error(c *gin.Context, err *Err) {
 		Message: err.Message,
 		Data:    nil,
 	})
+}
+
+func InitHandler() {
+	expire = viper.GetInt("token.expire")
 }

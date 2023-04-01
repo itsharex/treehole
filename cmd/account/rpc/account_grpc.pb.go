@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	AccountService_AccountRegister_FullMethodName = "/proto.AccountService/AccountRegister"
 	AccountService_SendCaptcha_FullMethodName     = "/proto.AccountService/SendCaptcha"
+	AccountService_AccountLogin_FullMethodName    = "/proto.AccountService/AccountLogin"
 )
 
 // AccountServiceClient is the client API for AccountService service.
@@ -29,6 +30,7 @@ const (
 type AccountServiceClient interface {
 	AccountRegister(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	SendCaptcha(ctx context.Context, in *SendCaptchaRequest, opts ...grpc.CallOption) (*SendCaptchaResponse, error)
+	AccountLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 }
 
 type accountServiceClient struct {
@@ -57,12 +59,22 @@ func (c *accountServiceClient) SendCaptcha(ctx context.Context, in *SendCaptchaR
 	return out, nil
 }
 
+func (c *accountServiceClient) AccountLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, AccountService_AccountLogin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServiceServer is the server API for AccountService service.
 // All implementations should embed UnimplementedAccountServiceServer
 // for forward compatibility
 type AccountServiceServer interface {
 	AccountRegister(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	SendCaptcha(context.Context, *SendCaptchaRequest) (*SendCaptchaResponse, error)
+	AccountLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 }
 
 // UnimplementedAccountServiceServer should be embedded to have forward compatible implementations.
@@ -74,6 +86,9 @@ func (UnimplementedAccountServiceServer) AccountRegister(context.Context, *Regis
 }
 func (UnimplementedAccountServiceServer) SendCaptcha(context.Context, *SendCaptchaRequest) (*SendCaptchaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendCaptcha not implemented")
+}
+func (UnimplementedAccountServiceServer) AccountLogin(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountLogin not implemented")
 }
 
 // UnsafeAccountServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -123,6 +138,24 @@ func _AccountService_SendCaptcha_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccountService_AccountLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).AccountLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccountService_AccountLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).AccountLogin(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccountService_ServiceDesc is the grpc.ServiceDesc for AccountService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -137,6 +170,10 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendCaptcha",
 			Handler:    _AccountService_SendCaptcha_Handler,
+		},
+		{
+			MethodName: "AccountLogin",
+			Handler:    _AccountService_AccountLogin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

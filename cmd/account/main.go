@@ -27,7 +27,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	rpc.RegisterAccountServiceServer(s, &service.CreateUserService{})
+	rpc.RegisterAccountServiceServer(s, &service.AccountService{})
 	reflection.Register(s)
 	if err := s.Serve(listen); err != nil {
 		panic(err)

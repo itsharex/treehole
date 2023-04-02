@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"crypto/tls"
 	"github.com/jordan-wright/email"
 	"github.com/spf13/viper"
 	"log"
@@ -34,9 +35,12 @@ func SendMail(to, subject, body string) error {
 	em.Subject = subject
 	em.Text = []byte(body)
 	em.ReplyTo = []string{replyTo}
-	err := em.Send(addr, smtp.PlainAuth("", user, pass, host))
+	err := em.SendWithTLS(addr, smtp.PlainAuth("", user, pass, host), &tls.Config{
+		ServerName: host,
+	})
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	return nil
 }

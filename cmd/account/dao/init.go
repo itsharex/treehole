@@ -9,7 +9,7 @@ import (
 )
 
 func InitDB() {
-	dsn := viper.GetString("db.mysql.dsn")
+	dsn := viper.GetString("db.mysql.account.dsn")
 	open, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.New(log.Default(), logger.Config{
 			IgnoreRecordNotFoundError: true,

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	dsn := viper.GetString("db.mysql.account.dsn")
+	dsn := viper.GetString("db.mysql.topic.dsn")
 	fmt.Println(dsn)
 
 	open, err := gorm.Open(mysql.Open(dsn))
@@ -19,7 +19,7 @@ func main() {
 	}
 
 	g := gen.NewGenerator(gen.Config{
-		OutPath:      "./cmd/account/dao",
+		OutPath:      "./cmd/topic/dao",
 		ModelPkgPath: "./model",
 		Mode:         gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface,
 	})

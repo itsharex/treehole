@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option go_package = "github.com/Jazee6/treehole/cmd/topic/rpc;rpc";
+
+package proto;
+
+import "annotations.proto";
+import "code.proto";
+
+service TopicService {
+  rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/topic"
+      body: "*"
+    };
+  }
+}
+
+message CreateTopicRequest {
+  uint32 uid = 1;
+  string content = 2;
+}
+
+message CreateTopicResponse {
+  Code code = 1;
+}

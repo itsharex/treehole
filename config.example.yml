@@ -22,6 +22,7 @@ token:
 server:
   gateway: ":8088"
   account: ":8081"
+  topic: ":8082"
 
 email:
   host: "smtp.gmail.com"

@@ -13,14 +13,17 @@ import (
 	"net"
 )
 
+const name = "account"
+
 func main() {
 	dao.InitDB()
 	utils.InitJWT()
 	utils.InitSMTP()
 	service.InitService()
 
-	addr := viper.GetString("server.account")
-	log.Println("account server listen on", addr)
+	sub := viper.Sub("server." + name)
+	addr := net.JoinHostPort(sub.GetString("host"), sub.GetString("port"))
+	log.Println(name+" server listen on", addr)
 	listen, err := net.Listen("tcp", addr)
 	if err != nil {
 		panic(err)

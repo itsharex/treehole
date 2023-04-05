@@ -5,7 +5,10 @@ import (
 	_ "github.com/Jazee6/treehole/pkg/configs"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"net"
 )
+
+const name = "gateway"
 
 func main() {
 	g := gin.New()
@@ -20,7 +23,9 @@ func main() {
 		panic(err)
 	}
 
-	err = g.Run(viper.GetString("server.gateway"))
+	sub := viper.Sub("server." + name)
+	addr := net.JoinHostPort(sub.GetString("host"), sub.GetString("port"))
+	err = g.Run(addr)
 	if err != nil {
 		panic(err)
 	}

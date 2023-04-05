@@ -20,9 +20,18 @@ token:
   secret: "12255C8AA7FAE430EA75181CCF5EE94F"
 
 server:
-  gateway: ":8088"
-  account: ":8081"
-  topic: ":8082"
+  gateway:
+    host: "localhost"
+    port: 8088
+  etcd:
+    host: "localhost"
+    port: 2379
+  account:
+    host: "localhost"
+    port: 8081
+  topic:
+    host: "localhost"
+    port: 8082
 
 email:
   host: "smtp.gmail.com"

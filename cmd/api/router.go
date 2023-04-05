@@ -16,4 +16,7 @@ func initRouter(g *gin.Engine) {
 
 	auth := api.Group("/")
 	auth.Use(middleware.Auth())
+	{
+		auth.POST("/topic", handler.CreateTopic)
+	}
 }

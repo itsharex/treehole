@@ -70,3 +70,5 @@ require (
 	gorm.io/datatypes v1.1.1 // indirect
 	gorm.io/hints v1.1.1 // indirect
 )
+
+replace google.golang.org/grpc => google.golang.org/grpc v1.49.0

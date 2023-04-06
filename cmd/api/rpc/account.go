@@ -2,21 +2,19 @@ package rpc
 
 import (
 	pb "github.com/Jazee6/treehole/cmd/account/rpc"
-	"google.golang.org/grpc"
+	"github.com/Jazee6/treehole/pkg/etcd"
+	"github.com/spf13/viper"
+	"net"
 )
 
 var Client pb.AccountServiceClient
 
-func init() {
-	dial, err := grpc.Dial(":8081", grpc.WithInsecure())
+func InitAccount() {
+	sub := viper.Sub("server.etcd")
+	addr := net.JoinHostPort(sub.GetString("host"), sub.GetString("port"))
+	dail, err := etcd.WatchGrpc(addr, "account")
 	if err != nil {
-		return
+		panic(err)
 	}
-
-	//dial.Close()
-
-	Client = pb.NewAccountServiceClient(dial)
-
-	//_, cancel := context.WithTimeout(context.Background(), time.Second)
-	//defer cancel()
+	Client = pb.NewAccountServiceClient(dail)
 }

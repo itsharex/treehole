@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Jazee6/treehole/cmd/api/handler"
+	"github.com/Jazee6/treehole/cmd/api/rpc"
 	_ "github.com/Jazee6/treehole/pkg/configs"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -17,6 +18,7 @@ func main() {
 
 	initRouter(g)
 	handler.InitHandler()
+	rpc.InitAccount()
 
 	err := g.SetTrustedProxies(nil)
 	if err != nil {

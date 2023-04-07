@@ -6,6 +6,7 @@ import (
 	"github.com/Jazee6/treehole/cmd/account/service"
 	_ "github.com/Jazee6/treehole/pkg/configs"
 	"github.com/Jazee6/treehole/pkg/etcd"
+	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/Jazee6/treehole/pkg/utils"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -39,7 +40,7 @@ func main() {
 		panic(err)
 	}
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.UnaryInterceptor(rpcs.Log()))
 	rpc.RegisterAccountServiceServer(s, &service.AccountService{})
 	reflection.Register(s)
 	if err := s.Serve(listen); err != nil {

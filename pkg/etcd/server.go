@@ -45,8 +45,7 @@ func Register(serviceHost, servicePort, serviceName, etcdTarget string, ttl int6
 	}
 	go func() {
 		for {
-			c := <-ch
-			log.Println(key, c.TTL)
+			<-ch
 		}
 	}()
 	log.Println(key, "Register")

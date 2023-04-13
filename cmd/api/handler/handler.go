@@ -16,10 +16,8 @@ func NewErr(code int, message string) *Err {
 }
 
 var (
-	ErrValidate = NewErr(40000, "validate error")
-	ErrServer   = NewErr(50000, "server error")
-	path        = "/api/v1"
-	expire      int
+	path   = "/api/v1"
+	expire int
 )
 
 type Response struct {
@@ -37,7 +35,7 @@ func Success(c *gin.Context, data interface{}) {
 }
 
 func Error(c *gin.Context, err *Err) {
-	c.JSON(http.StatusBadRequest, Response{
+	c.JSON(http.StatusOK, Response{
 		Code:    err.Code,
 		Message: err.Message,
 		Data:    nil,

@@ -3,7 +3,9 @@ package handler
 import (
 	pb "github.com/Jazee6/treehole/cmd/account/rpc"
 	"github.com/Jazee6/treehole/cmd/api/rpc"
+	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type RegRequest struct {
@@ -17,21 +19,20 @@ func Register(c *gin.Context) {
 	var req RegRequest
 	err := c.Bind(&req)
 	if err != nil {
-		Error(c, ErrValidate)
 		return
 	}
-	resp, err := rpc.Client.AccountRegister(c, &pb.RegisterRequest{
+	resp, err := rpc.AccountClient.AccountRegister(c, &pb.RegisterRequest{
 		Nickname: req.NickName,
 		Email:    req.Email,
 		Password: req.Password,
 		Captcha:  req.Captcha,
 	})
 	if err != nil {
-		Error(c, ErrServer)
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	if resp.Code != pb.Code_Success {
-		Error(c, NewErr(int(resp.Code), pb.Code_name[int32(resp.Code)]))
+	if resp.Code != rpcs.Code_Success {
+		Error(c, NewErr(int(resp.Code), rpcs.Code_name[int32(resp.Code)]))
 		return
 	}
 	c.SetCookie("token", resp.Token, expire*3600, path, "", true, true)
@@ -47,19 +48,18 @@ func Login(c *gin.Context) {
 	var req LoginRequest
 	err := c.Bind(&req)
 	if err != nil {
-		Error(c, ErrValidate)
 		return
 	}
-	resp, err := rpc.Client.AccountLogin(c, &pb.LoginRequest{
+	resp, err := rpc.AccountClient.AccountLogin(c, &pb.LoginRequest{
 		Email:    req.Email,
 		Password: req.Password,
 	})
 	if err != nil {
-		Error(c, ErrServer)
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	if resp.Code != pb.Code_Success {
-		Error(c, NewErr(int(resp.Code), pb.Code_name[int32(resp.Code)]))
+	if resp.Code != rpcs.Code_Success {
+		Error(c, NewErr(int(resp.Code), rpcs.Code_name[int32(resp.Code)]))
 		return
 	}
 	c.SetCookie("token", resp.Token, expire*3600, path, "", true, true)
@@ -74,18 +74,17 @@ func Captcha(c *gin.Context) {
 	var req CaptchaRequest
 	err := c.Bind(&req)
 	if err != nil {
-		Error(c, ErrValidate)
 		return
 	}
-	resp, err := rpc.Client.SendCaptcha(c, &pb.SendCaptchaRequest{
+	resp, err := rpc.AccountClient.SendCaptcha(c, &pb.SendCaptchaRequest{
 		Email: req.Email,
 	})
 	if err != nil {
-		Error(c, ErrServer)
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	if resp.Code != pb.Code_Success {
-		Error(c, NewErr(int(resp.Code), pb.Code_name[int32(resp.Code)]))
+	if resp.Code != rpcs.Code_Success {
+		Error(c, NewErr(int(resp.Code), rpcs.Code_name[int32(resp.Code)]))
 		return
 	}
 	Success(c, resp.Code)

@@ -7,7 +7,7 @@ import (
 	"net"
 )
 
-var Client pb.AccountServiceClient
+var AccountClient pb.AccountServiceClient
 
 func InitAccount() {
 	sub := viper.Sub("server.etcd")
@@ -16,5 +16,5 @@ func InitAccount() {
 	if err != nil {
 		panic(err)
 	}
-	Client = pb.NewAccountServiceClient(dail)
+	AccountClient = pb.NewAccountServiceClient(dail)
 }

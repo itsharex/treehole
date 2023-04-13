@@ -4,9 +4,7 @@ option go_package = "github.com/Jazee6/treehole/cmd/topic/rpc;rpc";
 
 package proto;
 
-enum Code{
-  Success = 0;
-}
+import "code.proto";
 
 service TopicService {
   rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse) {}

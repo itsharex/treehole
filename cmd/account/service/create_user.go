@@ -8,6 +8,7 @@ import (
 	"github.com/Jazee6/treehole/cmd/account/dao"
 	"github.com/Jazee6/treehole/cmd/account/model"
 	"github.com/Jazee6/treehole/cmd/account/rpc"
+	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/Jazee6/treehole/pkg/utils"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -39,7 +40,7 @@ func (c *AccountService) SendCaptcha(ctx context.Context, request *rpc.SendCaptc
 	}
 	if emailMax < re {
 		return &rpc.SendCaptchaResponse{
-			Code: rpc.Code_ErrEmailLimit,
+			Code: rpcs.Code_ErrEmailLimit,
 		}, nil
 	}
 	err = r.Incr(ctx, "email").Err()
@@ -63,7 +64,7 @@ func (c *AccountService) SendCaptcha(ctx context.Context, request *rpc.SendCaptc
 	}
 
 	return &rpc.SendCaptchaResponse{
-		Code: rpc.Code_Success,
+		Code: rpcs.Code_Success,
 	}, nil
 }
 
@@ -74,12 +75,12 @@ func (c *AccountService) AccountRegister(ctx context.Context, request *rpc.Regis
 	}
 	if err == redis.Nil {
 		return &rpc.RegisterResponse{
-			Code: rpc.Code_ErrCaptchaNil,
+			Code: rpcs.Code_ErrCaptchaNil,
 		}, nil
 	}
 	if result != request.Captcha {
 		return &rpc.RegisterResponse{
-			Code: rpc.Code_ErrCaptchaErr,
+			Code: rpcs.Code_ErrCaptchaErr,
 		}, nil
 	}
 
@@ -90,7 +91,7 @@ func (c *AccountService) AccountRegister(ctx context.Context, request *rpc.Regis
 	}
 	if user != nil {
 		return &rpc.RegisterResponse{
-			Code: rpc.Code_ErrUserExist,
+			Code: rpcs.Code_ErrUserExist,
 		}, nil
 	}
 	s := sha256.New()
@@ -101,7 +102,6 @@ func (c *AccountService) AccountRegister(ctx context.Context, request *rpc.Regis
 		Password:  hex.EncodeToString(s.Sum(nil)),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		DeletedAt: gorm.DeletedAt{},
 	}
 	err = q.Create(usr)
 	if err != nil {
@@ -112,7 +112,7 @@ func (c *AccountService) AccountRegister(ctx context.Context, request *rpc.Regis
 		return nil, err
 	}
 	return &rpc.RegisterResponse{
-		Code:  rpc.Code_Success,
+		Code:  rpcs.Code_Success,
 		Token: tk,
 	}, nil
 }

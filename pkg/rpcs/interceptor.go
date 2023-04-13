@@ -12,6 +12,7 @@ func Log() grpc.UnaryServerInterceptor {
 		if err != nil {
 			log.Printf("Err %s %v\n", info.FullMethod, err)
 		}
+		log.Printf("Req %s %v\n", info.FullMethod, req)
 		return
 	}
 }

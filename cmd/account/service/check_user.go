@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"github.com/Jazee6/treehole/cmd/account/dao"
 	"github.com/Jazee6/treehole/cmd/account/rpc"
+	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/Jazee6/treehole/pkg/utils"
 	"gorm.io/gorm"
 )
@@ -16,7 +17,7 @@ func (c *AccountService) AccountLogin(_ context.Context, request *rpc.LoginReque
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return &rpc.LoginResponse{
-				Code: rpc.Code_ErrUserNotExist,
+				Code: rpcs.Code_ErrUserNotExist,
 			}, nil
 		}
 		return nil, err
@@ -25,7 +26,7 @@ func (c *AccountService) AccountLogin(_ context.Context, request *rpc.LoginReque
 	s.Write([]byte(request.Password + salt))
 	if u.Password != hex.EncodeToString(s.Sum(nil)) {
 		return &rpc.LoginResponse{
-			Code: rpc.Code_ErrPasswordErr,
+			Code: rpcs.Code_ErrPasswordErr,
 		}, nil
 	}
 	tk, err := utils.GenToken(*u)
@@ -33,7 +34,7 @@ func (c *AccountService) AccountLogin(_ context.Context, request *rpc.LoginReque
 		return nil, err
 	}
 	return &rpc.LoginResponse{
-		Code:  rpc.Code_Success,
+		Code:  rpcs.Code_Success,
 		Token: tk,
 	}, nil
 }

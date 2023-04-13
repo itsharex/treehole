@@ -14,6 +14,11 @@ var (
 	secret string
 )
 
+type Claims struct {
+	Uid int32
+	jwt.RegisteredClaims
+}
+
 func InitJWT() {
 	h := viper.GetInt("token.expire")
 	exp = time.Hour * time.Duration(h)
@@ -21,9 +26,11 @@ func InitJWT() {
 }
 
 func GenToken(u model.User) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"uid": u.ID,
-		"exp": time.Now().Add(exp).Format(time.RFC3339),
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
+		Uid: u.ID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(exp)),
+		},
 	})
 	signedString, err := token.SignedString([]byte(secret))
 	if err != nil {
@@ -32,8 +39,8 @@ func GenToken(u model.User) (string, error) {
 	return signedString, nil
 }
 
-func ValidToken(token string) (jwt.MapClaims, error) {
-	tk, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+func ValidToken(token string) (*Claims, error) {
+	tk, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
@@ -42,12 +49,5 @@ func ValidToken(token string) (jwt.MapClaims, error) {
 	if !tk.Valid {
 		return nil, errors.New(consts.ErrTokenInvalid)
 	}
-	parse, err := time.Parse(time.RFC3339, tk.Claims.(jwt.MapClaims)["exp"].(string))
-	if err != nil {
-		return nil, err
-	}
-	if time.Now().After(parse) {
-		return nil, errors.New(consts.ErrExpired)
-	}
-	return tk.Claims.(jwt.MapClaims), nil
+	return tk.Claims.(*Claims), nil
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/Jazee6/treehole/cmd/api/handler"
 	"github.com/Jazee6/treehole/cmd/api/rpc"
 	_ "github.com/Jazee6/treehole/pkg/configs"
+	"github.com/Jazee6/treehole/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"net"
@@ -16,9 +17,11 @@ func main() {
 	g.Use(gin.Logger())
 	g.Use(gin.Recovery())
 
+	utils.InitJWT()
 	initRouter(g)
 	handler.InitHandler()
 	rpc.InitAccount()
+	rpc.InitTopic()
 
 	err := g.SetTrustedProxies(nil)
 	if err != nil {

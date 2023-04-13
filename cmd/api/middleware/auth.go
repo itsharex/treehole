@@ -19,6 +19,7 @@ func Auth() gin.HandlerFunc {
 		}
 		payload, err := utils.ValidToken(cookie)
 		if err != nil {
+			println(err.Error())
 			c.Redirect(http.StatusTemporaryRedirect, "/login")
 			return
 		}

@@ -7,7 +7,7 @@ import (
 	"github.com/Jazee6/treehole/pkg/rpcs"
 )
 
-func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest) (*rpc.GetTopicResponse, error) {
+func (t TopicService) GetTopic(_ context.Context, request *rpc.GetTopicRequest) (*rpc.GetTopicResponse, error) {
 	q := dao.Q.Topic
 	var topics []*rpc.Topic
 	err := q.Limit(int(request.Limit)).Offset(int(request.Offset)).Order(q.CreatedAt.Desc()).Scan(&topics)

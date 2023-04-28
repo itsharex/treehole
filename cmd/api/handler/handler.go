@@ -16,7 +16,7 @@ func NewErr(code int, message string) *Err {
 }
 
 var (
-	path   = "/api/v1"
+	path   = "/v1"
 	expire int
 )
 

@@ -8,6 +8,7 @@ import "code.proto";
 
 service TopicService {
   rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse) {}
+  rpc GetTopic(GetTopicRequest) returns (GetTopicResponse) {}
 }
 
 message CreateTopicRequest {
@@ -17,4 +18,20 @@ message CreateTopicRequest {
 
 message CreateTopicResponse {
   Code code = 1;
+}
+
+message GetTopicRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+}
+
+message Topic {
+  uint32 id = 1;
+  string content = 2;
+  string created_at = 3;
+}
+
+message GetTopicResponse {
+  Code code = 1;
+  repeated Topic topics = 2;
 }

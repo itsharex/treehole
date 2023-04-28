@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Jazee6/treehole/cmd/topic/dao"
 	"github.com/Jazee6/treehole/cmd/topic/rpc"
 	"github.com/Jazee6/treehole/cmd/topic/service"
 	_ "github.com/Jazee6/treehole/pkg/configs"
@@ -16,6 +17,8 @@ import (
 const name = "topic"
 
 func main() {
+	dao.InitDB()
+
 	sub := viper.Sub("server." + name)
 	host := sub.GetString("host")
 	port := sub.GetString("port")

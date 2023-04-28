@@ -7,11 +7,12 @@ import (
 )
 
 func initRouter(g *gin.Engine) {
-	api := g.Group("/api/v1")
+	api := g.Group("/v1")
 	{
 		api.POST("/register", handler.Register)
 		api.POST("/login", handler.Login)
 		api.POST("/captcha", handler.Captcha)
+		api.GET("/topic/:limit/:offset", handler.GetTopic)
 	}
 
 	auth := api.Group("/")

@@ -8,18 +8,13 @@ import (
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("token")
-		if err != nil {
-			if err == http.ErrNoCookie {
-				c.Redirect(http.StatusTemporaryRedirect, "/login")
-				return
-			}
-			c.AbortWithStatus(http.StatusInternalServerError)
+		token := c.GetHeader("Authorization")
+		if token == "" {
+			c.Redirect(http.StatusTemporaryRedirect, "/login")
 			return
 		}
-		payload, err := utils.ValidToken(cookie)
+		payload, err := utils.ValidToken(token[7:])
 		if err != nil {
-			println(err.Error())
 			c.Redirect(http.StatusTemporaryRedirect, "/login")
 			return
 		}

@@ -10,12 +10,12 @@ import (
 )
 
 type CreateTopicRequest struct {
-	Content string `form:"content" binding:"required,max=1024,min=1"`
+	Content string `json:"content" binding:"required,max=1024,min=1"`
 }
 
 func CreateTopic(c *gin.Context) {
 	var req CreateTopicRequest
-	err := c.Bind(&req)
+	err := c.BindJSON(&req)
 	if err != nil {
 		return
 	}

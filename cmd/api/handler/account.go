@@ -9,15 +9,15 @@ import (
 )
 
 type RegRequest struct {
-	NickName string `form:"nick_name"  binding:"required,max=16"`
-	Email    string `form:"email"  binding:"required,email"`
-	Password string `form:"password" binding:"required,sha256"`
-	Captcha  string `form:"captcha" binding:"required,len=6"`
+	NickName string `json:"nick_name"  binding:"required,max=16"`
+	Email    string `json:"email"  binding:"required,email"`
+	Password string `json:"password" binding:"required,sha256"`
+	Captcha  string `json:"captcha" binding:"required,len=6"`
 }
 
 func Register(c *gin.Context) {
 	var req RegRequest
-	err := c.Bind(&req)
+	err := c.BindJSON(&req)
 	if err != nil {
 		return
 	}
@@ -35,18 +35,17 @@ func Register(c *gin.Context) {
 		Error(c, NewErr(int(resp.Code), rpcs.Code_name[int32(resp.Code)]))
 		return
 	}
-	c.SetCookie("token", resp.Token, expire*3600, path, "", true, true)
-	Success(c, resp.Code)
+	Success(c, resp)
 }
 
 type LoginRequest struct {
-	Email    string `form:"email"  binding:"required,email"`
-	Password string `form:"password" binding:"required,sha256"`
+	Email    string `json:"email"  binding:"required,email"`
+	Password string `json:"password" binding:"required,sha256"`
 }
 
 func Login(c *gin.Context) {
 	var req LoginRequest
-	err := c.Bind(&req)
+	err := c.BindJSON(&req)
 	if err != nil {
 		return
 	}
@@ -62,17 +61,16 @@ func Login(c *gin.Context) {
 		Error(c, NewErr(int(resp.Code), rpcs.Code_name[int32(resp.Code)]))
 		return
 	}
-	c.SetCookie("token", resp.Token, expire*3600, path, "", true, true)
-	Success(c, resp.Code)
+	Success(c, resp)
 }
 
 type CaptchaRequest struct {
-	Email string `form:"email"  binding:"required,email"`
+	Email string `json:"email"  binding:"required,email"`
 }
 
 func Captcha(c *gin.Context) {
 	var req CaptchaRequest
-	err := c.Bind(&req)
+	err := c.BindJSON(&req)
 	if err != nil {
 		return
 	}
@@ -87,5 +85,5 @@ func Captcha(c *gin.Context) {
 		Error(c, NewErr(int(resp.Code), rpcs.Code_name[int32(resp.Code)]))
 		return
 	}
-	Success(c, resp.Code)
+	Success(c, resp)
 }

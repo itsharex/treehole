@@ -40,3 +40,5 @@ email:
   pass: "password"
   replyTo: "example@gmail.com"
   max: 200
+
+recaptcha: "6jaz0001LcJjGA" #https://www.google.com/recaptcha/admin

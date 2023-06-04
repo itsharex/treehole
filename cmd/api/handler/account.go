@@ -65,6 +65,7 @@ func Login(c *gin.Context) {
 }
 
 type CaptchaRequest struct {
+	Token string `json:"token"  binding:"required"`
 	Email string `json:"email"  binding:"required,email"`
 }
 
@@ -76,6 +77,7 @@ func Captcha(c *gin.Context) {
 	}
 	resp, err := rpc.AccountClient.SendCaptcha(c, &pb.SendCaptchaRequest{
 		Email: req.Email,
+		Token: req.Token,
 	})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)

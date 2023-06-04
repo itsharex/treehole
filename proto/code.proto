@@ -12,4 +12,5 @@ enum Code{
   ErrCaptchaErr = 40004;
   ErrUserNotExist = 40005;
   ErrPasswordErr = 40006;
+  ErrRecaptchaErr = 40007;
 }

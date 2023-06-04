@@ -14,6 +14,7 @@ var (
 	salt           string
 	r              *redis.Client
 	emailMax       int
+	recaptchaSec   string
 )
 
 func InitService() {
@@ -30,6 +31,7 @@ func InitService() {
 	})
 	salt = viper.GetString("register.salt")
 	emailMax = viper.GetInt("email.max")
+	recaptchaSec = viper.GetString("recaptcha")
 
 	url, err := redis.ParseURL(viper.GetString("db.redis.dsn"))
 	if err != nil {

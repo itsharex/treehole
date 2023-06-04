@@ -26,6 +26,7 @@ message RegisterResponse {
 
 message SendCaptchaRequest {
   string email = 1;
+  string token = 2;
 }
 
 message SendCaptchaResponse {

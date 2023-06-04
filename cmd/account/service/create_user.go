@@ -21,6 +21,29 @@ import (
 type AccountService struct{}
 
 func (c *AccountService) SendCaptcha(ctx context.Context, request *rpc.SendCaptchaRequest) (*rpc.SendCaptchaResponse, error) {
+	err := Recaptcha(request.Token)
+	if err != nil {
+		if err.Error() == "recaptcha failed" {
+			return &rpc.SendCaptchaResponse{
+				Code: rpcs.Code_ErrRecaptchaErr,
+			}, nil
+		}
+		return nil, err
+	}
+
+	// 验证邮箱是否已经注册
+	q := dao.Q.User
+	user, err := q.Where(q.Email.Eq(request.Email)).Take()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	if user != nil {
+		return &rpc.SendCaptchaResponse{
+			Code: rpcs.Code_ErrUserExist,
+		}, nil
+	}
+
+	// 验证码限流
 	result, err := r.Get(ctx, "email").Result()
 	if err != nil && err != redis.Nil {
 		return nil, err

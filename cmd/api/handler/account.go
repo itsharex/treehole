@@ -9,10 +9,10 @@ import (
 )
 
 type RegRequest struct {
-	NickName string `json:"nick_name"  binding:"required,max=16"`
 	Email    string `json:"email"  binding:"required,email"`
 	Password string `json:"password" binding:"required,sha256"`
 	Captcha  string `json:"captcha" binding:"required,len=6"`
+	CampusId uint32 `json:"campusId" binding:"required,number"`
 }
 
 func Register(c *gin.Context) {
@@ -22,10 +22,10 @@ func Register(c *gin.Context) {
 		return
 	}
 	resp, err := rpc.AccountClient.AccountRegister(c, &pb.RegisterRequest{
-		Nickname: req.NickName,
 		Email:    req.Email,
 		Password: req.Password,
 		Captcha:  req.Captcha,
+		CampusId: req.CampusId,
 	})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -85,6 +85,26 @@ func Captcha(c *gin.Context) {
 	}
 	if resp.Code != rpcs.Code_Success {
 		Error(c, NewErr(int(resp.Code), rpcs.Code_name[int32(resp.Code)]))
+		return
+	}
+	Success(c, resp)
+}
+
+type CampusRequest struct {
+	Name string `json:"name"  binding:"required,max=64"`
+}
+
+func GetCampus(c *gin.Context) {
+	var req CampusRequest
+	err := c.BindJSON(&req)
+	if err != nil {
+		return
+	}
+	resp, err := rpc.AccountClient.GetCampusList(c, &pb.CampusListReq{
+		Name: req.Name,
+	})
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	Success(c, resp)

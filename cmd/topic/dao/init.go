@@ -14,6 +14,7 @@ func InitDB() {
 		Logger: logger.New(log.Default(), logger.Config{
 			IgnoreRecordNotFoundError: true,
 		}),
+		PrepareStmt: true,
 	})
 	if err != nil {
 		panic(err)

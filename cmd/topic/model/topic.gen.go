@@ -14,11 +14,11 @@ const TableNameTopic = "topic"
 
 // Topic mapped from table <topic>
 type Topic struct {
-	ID        int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	UID       int32          `gorm:"column:uid;not null" json:"uid"`
+	ID        uint32         `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	UID       uint32         `gorm:"column:uid;not null" json:"uid"`
 	Content   string         `gorm:"column:content;not null" json:"content"`
-	Comments  int32          `gorm:"column:comments;not null" json:"comments"`
-	Stars     int32          `gorm:"column:stars;not null" json:"stars"`
+	Comments  uint32         `gorm:"column:comments;not null" json:"comments"`
+	Stars     uint32         `gorm:"column:stars;not null" json:"stars"`
 	CreatedAt time.Time      `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

@@ -27,7 +27,7 @@ func InitJWT() {
 
 func GenToken(u model.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
-		Uid: u.ID,
+		Uid: int32(u.ID),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(exp)),
 		},

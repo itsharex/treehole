@@ -27,11 +27,11 @@ func newTopic(db *gorm.DB, opts ...gen.DOOption) topic {
 
 	tableName := _topic.topicDo.TableName()
 	_topic.ALL = field.NewAsterisk(tableName)
-	_topic.ID = field.NewInt32(tableName, "id")
-	_topic.UID = field.NewInt32(tableName, "uid")
+	_topic.ID = field.NewUint32(tableName, "id")
+	_topic.UID = field.NewUint32(tableName, "uid")
 	_topic.Content = field.NewString(tableName, "content")
-	_topic.Comments = field.NewInt32(tableName, "comments")
-	_topic.Stars = field.NewInt32(tableName, "stars")
+	_topic.Comments = field.NewUint32(tableName, "comments")
+	_topic.Stars = field.NewUint32(tableName, "stars")
 	_topic.CreatedAt = field.NewTime(tableName, "created_at")
 	_topic.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_topic.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -45,11 +45,11 @@ type topic struct {
 	topicDo
 
 	ALL       field.Asterisk
-	ID        field.Int32
-	UID       field.Int32
+	ID        field.Uint32
+	UID       field.Uint32
 	Content   field.String
-	Comments  field.Int32
-	Stars     field.Int32
+	Comments  field.Uint32
+	Stars     field.Uint32
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -69,11 +69,11 @@ func (t topic) As(alias string) *topic {
 
 func (t *topic) updateTableName(table string) *topic {
 	t.ALL = field.NewAsterisk(table)
-	t.ID = field.NewInt32(table, "id")
-	t.UID = field.NewInt32(table, "uid")
+	t.ID = field.NewUint32(table, "id")
+	t.UID = field.NewUint32(table, "uid")
 	t.Content = field.NewString(table, "content")
-	t.Comments = field.NewInt32(table, "comments")
-	t.Stars = field.NewInt32(table, "stars")
+	t.Comments = field.NewUint32(table, "comments")
+	t.Stars = field.NewUint32(table, "stars")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
 	t.DeletedAt = field.NewField(table, "deleted_at")

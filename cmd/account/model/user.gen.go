@@ -14,10 +14,12 @@ const TableNameUser = "user"
 
 // User mapped from table <user>
 type User struct {
-	ID        int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	NickName  string         `gorm:"column:nick_name;not null" json:"nick_name"`
+	ID        uint32         `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Email     string         `gorm:"column:email;not null" json:"email"`
 	Password  string         `gorm:"column:password;not null" json:"password"`
+	CampusID  uint32         `gorm:"column:campus_id;not null" json:"campus_id"`
+	Verified  bool           `gorm:"column:verified;not null" json:"verified"`
+	Type      uint32         `gorm:"column:type;not null" json:"type"`
 	CreatedAt time.Time      `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

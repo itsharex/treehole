@@ -29,6 +29,8 @@ message Topic {
   uint32 id = 1;
   string content = 2;
   string created_at = 3;
+  string campus = 4;
+  bool verified = 5;
 }
 
 message GetTopicResponse {

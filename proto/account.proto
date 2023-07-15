@@ -10,13 +10,15 @@ service AccountService {
   rpc AccountRegister(RegisterRequest) returns (RegisterResponse) {}
   rpc SendCaptcha(SendCaptchaRequest) returns (SendCaptchaResponse) {}
   rpc AccountLogin(LoginRequest) returns (LoginResponse) {}
+  rpc GetCampusList(CampusListReq) returns (CampusListResp) {}
+  rpc GetTopicInfo(TopicInfoReq) returns (TopicInfoResp) {}
 }
 
 message RegisterRequest {
-  string nickname = 1;
-  string email = 2;
-  string password = 3;
-  string captcha = 4;
+  string email = 1;
+  string password = 2;
+  string captcha = 3;
+  uint32 campus_id = 4;
 }
 
 message RegisterResponse {
@@ -41,4 +43,31 @@ message LoginRequest {
 message LoginResponse {
   Code code = 1;
   string token = 2;
+}
+
+message CampusListReq {
+  string name = 1;
+}
+
+message Campus {
+  uint32 id = 1;
+  string name = 2;
+}
+
+message CampusListResp {
+  repeated Campus campus = 1;
+}
+
+message TopicInfoReq{
+  repeated uint32 uid = 1;
+}
+
+message TopicInfo{
+  uint32 uid = 1;
+  string campus_name = 2;
+  bool verified = 3;
+}
+
+message TopicInfoResp{
+  repeated TopicInfo topic_info = 1;
 }

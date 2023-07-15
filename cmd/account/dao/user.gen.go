@@ -27,10 +27,12 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 
 	tableName := _user.userDo.TableName()
 	_user.ALL = field.NewAsterisk(tableName)
-	_user.ID = field.NewInt32(tableName, "id")
-	_user.NickName = field.NewString(tableName, "nick_name")
+	_user.ID = field.NewUint32(tableName, "id")
 	_user.Email = field.NewString(tableName, "email")
 	_user.Password = field.NewString(tableName, "password")
+	_user.CampusID = field.NewUint32(tableName, "campus_id")
+	_user.Verified = field.NewBool(tableName, "verified")
+	_user.Type = field.NewUint32(tableName, "type")
 	_user.CreatedAt = field.NewTime(tableName, "created_at")
 	_user.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_user.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -44,10 +46,12 @@ type user struct {
 	userDo
 
 	ALL       field.Asterisk
-	ID        field.Int32
-	NickName  field.String
+	ID        field.Uint32
 	Email     field.String
 	Password  field.String
+	CampusID  field.Uint32
+	Verified  field.Bool
+	Type      field.Uint32
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -67,10 +71,12 @@ func (u user) As(alias string) *user {
 
 func (u *user) updateTableName(table string) *user {
 	u.ALL = field.NewAsterisk(table)
-	u.ID = field.NewInt32(table, "id")
-	u.NickName = field.NewString(table, "nick_name")
+	u.ID = field.NewUint32(table, "id")
 	u.Email = field.NewString(table, "email")
 	u.Password = field.NewString(table, "password")
+	u.CampusID = field.NewUint32(table, "campus_id")
+	u.Verified = field.NewBool(table, "verified")
+	u.Type = field.NewUint32(table, "type")
 	u.CreatedAt = field.NewTime(table, "created_at")
 	u.UpdatedAt = field.NewTime(table, "updated_at")
 	u.DeletedAt = field.NewField(table, "deleted_at")
@@ -90,11 +96,13 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 7)
+	u.fieldMap = make(map[string]field.Expr, 9)
 	u.fieldMap["id"] = u.ID
-	u.fieldMap["nick_name"] = u.NickName
 	u.fieldMap["email"] = u.Email
 	u.fieldMap["password"] = u.Password
+	u.fieldMap["campus_id"] = u.CampusID
+	u.fieldMap["verified"] = u.Verified
+	u.fieldMap["type"] = u.Type
 	u.fieldMap["created_at"] = u.CreatedAt
 	u.fieldMap["updated_at"] = u.UpdatedAt
 	u.fieldMap["deleted_at"] = u.DeletedAt

@@ -19,9 +19,15 @@ func main() {
 	}
 
 	g := gen.NewGenerator(gen.Config{
-		OutPath:      "./cmd/topic/dao",
-		ModelPkgPath: "./model",
-		Mode:         gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface,
+		OutPath:           "./cmd/topic/dao",
+		ModelPkgPath:      "./model",
+		WithUnitTest:      false,
+		FieldNullable:     false,
+		FieldCoverable:    false,
+		FieldSignable:     true,
+		FieldWithIndexTag: false,
+		FieldWithTypeTag:  false,
+		Mode:              gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface,
 	})
 
 	g.UseDB(open)

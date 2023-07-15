@@ -18,6 +18,7 @@ const name = "topic"
 
 func main() {
 	dao.InitDB()
+	service.InitService()
 
 	sub := viper.Sub("server." + name)
 	host := sub.GetString("host")

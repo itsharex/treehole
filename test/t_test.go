@@ -23,9 +23,9 @@ func TestT(t *testing.T) {
 	}
 	r := redis.NewClient(url)
 
-	result, err := r.Get(context.Background(), "ema").Result()
-	if err != nil && err != redis.Nil {
-		panic(err)
+	result, err := r.SAdd(context.Background(), "test2", 1).Result()
+	if err != nil {
+		return
 	}
 	println(result)
 }

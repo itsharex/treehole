@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/Jazee6/treehole/cmd/api/handler"
 	"github.com/Jazee6/treehole/cmd/api/rpc"
 	_ "github.com/Jazee6/treehole/pkg/configs"
 	"github.com/Jazee6/treehole/pkg/utils"
@@ -19,7 +18,6 @@ func main() {
 
 	utils.InitJWT()
 	initRouter(g)
-	handler.InitHandler()
 	rpc.InitAccount()
 	rpc.InitTopic()
 

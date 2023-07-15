@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"net/http"
 )
 
@@ -14,11 +13,6 @@ type Err struct {
 func NewErr(code int, message string) *Err {
 	return &Err{Code: code, Message: message}
 }
-
-var (
-	path   = "/v1"
-	expire int
-)
 
 type Response struct {
 	Code    int         `json:"code"`
@@ -40,8 +34,4 @@ func Error(c *gin.Context, err *Err) {
 		Message: err.Message,
 		Data:    nil,
 	})
-}
-
-func InitHandler() {
-	expire = viper.GetInt("token.expire")
 }

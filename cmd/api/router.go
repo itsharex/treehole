@@ -13,6 +13,7 @@ func initRouter(g *gin.Engine) {
 		api.POST("/login", handler.Login)
 		api.POST("/captcha", handler.Captcha)
 		api.GET("/topic/:limit/:offset", handler.GetTopic)
+		api.POST("/campus", handler.GetCampus)
 	}
 
 	auth := api.Group("/")

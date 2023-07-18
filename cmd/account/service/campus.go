@@ -9,7 +9,7 @@ import (
 func (c *AccountService) GetCampusList(_ context.Context, req *rpc.CampusListReq) (*rpc.CampusListResp, error) {
 	q := dao.Q.Campu
 	var campus []*rpc.Campus
-	err := q.Where(q.Name.Like("%" + req.Name + "%")).Limit(20).Scan(&campus)
+	err := q.Where(q.Name.Like("%" + req.Name + "%")).Limit(10).Scan(&campus)
 	if err != nil {
 		return nil, err
 	}

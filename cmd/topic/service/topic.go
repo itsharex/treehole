@@ -37,7 +37,7 @@ func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest
 	for i, find := range finds {
 		req.Uid[i] = find.UID
 	}
-	info, err := rpc.AccountClient.GetTopicInfo(ctx, &req)
+	info, err := pb.AccountClient.GetTopicInfo(ctx, &req)
 	if err != nil {
 		return nil, err
 	}

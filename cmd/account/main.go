@@ -4,7 +4,7 @@ import (
 	"github.com/Jazee6/treehole/cmd/account/dao"
 	"github.com/Jazee6/treehole/cmd/account/rpc"
 	"github.com/Jazee6/treehole/cmd/account/service"
-	_ "github.com/Jazee6/treehole/pkg/configs"
+	_ "github.com/Jazee6/treehole/pkg/config"
 	"github.com/Jazee6/treehole/pkg/etcd"
 	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/Jazee6/treehole/pkg/utils"

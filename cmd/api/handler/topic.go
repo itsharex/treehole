@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/Jazee6/treehole/cmd/api/rpc"
 	pb "github.com/Jazee6/treehole/cmd/topic/rpc"
 	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/Jazee6/treehole/pkg/utils"
@@ -20,7 +19,7 @@ func CreateTopic(c *gin.Context) {
 		return
 	}
 	claims, _ := c.Get("payload")
-	resp, err := rpc.TopicClient.CreateTopic(c, &pb.CreateTopicRequest{
+	resp, err := pb.TopicClient.CreateTopic(c, &pb.CreateTopicRequest{
 		Uid:     uint32(claims.(*utils.Claims).Uid),
 		Content: req.Content,
 	})
@@ -46,7 +45,7 @@ func GetTopic(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	resp, err := rpc.TopicClient.GetTopic(c, &pb.GetTopicRequest{
+	resp, err := pb.TopicClient.GetTopic(c, &pb.GetTopicRequest{
 		Limit:  req.Limit,
 		Offset: req.Offset,
 	})

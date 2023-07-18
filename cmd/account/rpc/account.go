@@ -1,13 +1,12 @@
 package rpc
 
 import (
-	pb "github.com/Jazee6/treehole/cmd/account/rpc"
 	"github.com/Jazee6/treehole/pkg/etcd"
 	"github.com/spf13/viper"
 	"net"
 )
 
-var AccountClient pb.AccountServiceClient
+var AccountClient AccountServiceClient
 
 func InitAccount() {
 	sub := viper.Sub("server.etcd")
@@ -16,5 +15,5 @@ func InitAccount() {
 	if err != nil {
 		panic(err)
 	}
-	AccountClient = pb.NewAccountServiceClient(dail)
+	AccountClient = NewAccountServiceClient(dail)
 }

@@ -3,7 +3,6 @@ package utils
 import (
 	"errors"
 	"github.com/Jazee6/treehole/cmd/account/model"
-	"github.com/Jazee6/treehole/pkg/consts"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/viper"
 	"time"
@@ -47,7 +46,7 @@ func ValidToken(token string) (*Claims, error) {
 		return nil, err
 	}
 	if !tk.Valid {
-		return nil, errors.New(consts.ErrTokenInvalid)
+		return nil, errors.New("token invalid")
 	}
 	return tk.Claims.(*Claims), nil
 }

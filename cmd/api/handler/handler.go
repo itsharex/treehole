@@ -14,6 +14,10 @@ func NewErr(code int, message string) *Err {
 	return &Err{Code: code, Message: message}
 }
 
+var (
+	ErrRecaptcha = NewErr(40100, "recaptcha failed")
+)
+
 type Response struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`

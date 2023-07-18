@@ -1,20 +1,19 @@
 package rpc
 
 import (
-	pb "github.com/Jazee6/treehole/cmd/account/rpc"
 	"github.com/Jazee6/treehole/pkg/etcd"
 	"github.com/spf13/viper"
 	"net"
 )
 
-var AccountClient pb.AccountServiceClient
+var TopicClient TopicServiceClient
 
-func InitAccount() {
+func InitTopic() {
 	sub := viper.Sub("server.etcd")
 	addr := net.JoinHostPort(sub.GetString("host"), sub.GetString("port"))
-	dail, err := etcd.WatchGrpc(addr, "account")
+	dail, err := etcd.WatchGrpc(addr, "topic")
 	if err != nil {
 		panic(err)
 	}
-	AccountClient = pb.NewAccountServiceClient(dail)
+	TopicClient = NewTopicServiceClient(dail)
 }

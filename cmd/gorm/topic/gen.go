@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/Jazee6/treehole/pkg/configs"
+	_ "github.com/Jazee6/treehole/pkg/config"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"

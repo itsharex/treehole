@@ -2,7 +2,6 @@ package handler
 
 import (
 	pb "github.com/Jazee6/treehole/cmd/account/rpc"
-	"github.com/Jazee6/treehole/cmd/api/rpc"
 	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -21,7 +20,7 @@ func Register(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	resp, err := rpc.AccountClient.AccountRegister(c, &pb.RegisterRequest{
+	resp, err := pb.AccountClient.AccountRegister(c, &pb.RegisterRequest{
 		Email:    req.Email,
 		Password: req.Password,
 		Captcha:  req.Captcha,
@@ -49,7 +48,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	resp, err := rpc.AccountClient.AccountLogin(c, &pb.LoginRequest{
+	resp, err := pb.AccountClient.AccountLogin(c, &pb.LoginRequest{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -65,7 +64,6 @@ func Login(c *gin.Context) {
 }
 
 type CaptchaRequest struct {
-	Token string `json:"token"  binding:"required"`
 	Email string `json:"email"  binding:"required,email"`
 }
 
@@ -75,9 +73,8 @@ func Captcha(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	resp, err := rpc.AccountClient.SendCaptcha(c, &pb.SendCaptchaRequest{
+	resp, err := pb.AccountClient.SendCaptcha(c, &pb.SendCaptchaRequest{
 		Email: req.Email,
-		Token: req.Token,
 	})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -100,7 +97,7 @@ func GetCampus(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	resp, err := rpc.AccountClient.GetCampusList(c, &pb.CampusListReq{
+	resp, err := pb.AccountClient.GetCampusList(c, &pb.CampusListReq{
 		Name: req.Name,
 	})
 	if err != nil {

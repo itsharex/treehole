@@ -3,7 +3,6 @@ package handler
 import (
 	pb "github.com/Jazee6/treehole/cmd/topic/rpc"
 	"github.com/Jazee6/treehole/pkg/rpcs"
-	"github.com/Jazee6/treehole/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,9 +17,8 @@ func CreateTopic(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	claims, _ := c.Get("payload")
 	resp, err := pb.TopicClient.CreateTopic(c, &pb.CreateTopicRequest{
-		Uid:     uint32(claims.(*utils.Claims).Uid),
+		Uid:     GetUid(c),
 		Content: req.Content,
 	})
 	if err != nil {
@@ -48,6 +46,7 @@ func GetTopic(c *gin.Context) {
 	resp, err := pb.TopicClient.GetTopic(c, &pb.GetTopicRequest{
 		Limit:  req.Limit,
 		Offset: req.Offset,
+		Uid:    GetPUid(c),
 	})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -58,4 +57,25 @@ func GetTopic(c *gin.Context) {
 		return
 	}
 	Success(c, resp.Topics)
+}
+
+type PutStarRequest struct {
+	Id uint32 `uri:"id" binding:"required,number"`
+}
+
+func PutStar(c *gin.Context) {
+	var req PutStarRequest
+	err := c.BindUri(&req)
+	if err != nil {
+		return
+	}
+	star, err := pb.TopicClient.PutStar(c, &pb.PutStarReq{
+		Uid: GetUid(c),
+		Tid: req.Id,
+	})
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	Success(c, star.Code)
 }

@@ -6,6 +6,8 @@ package proto;
 
 enum Code{
   Success = 0;
+  OKStar = 20001;
+  OKUnStar = 20002;
   ErrUserExist = 40001;
   ErrEmailLimit = 40002;
   ErrCaptchaNil = 40003;

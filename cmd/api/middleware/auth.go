@@ -10,12 +10,12 @@ func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
 		if token == "" {
-			c.Redirect(http.StatusTemporaryRedirect, "/login")
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 		payload, err := utils.ValidToken(token[7:])
 		if err != nil {
-			c.Redirect(http.StatusTemporaryRedirect, "/login")
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 		c.Set("payload", payload)

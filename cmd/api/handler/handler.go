@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/Jazee6/treehole/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -38,4 +39,22 @@ func Error(c *gin.Context, err *Err) {
 		Message: err.Message,
 		Data:    nil,
 	})
+}
+
+func GetUid(c *gin.Context) uint32 {
+	claims, _ := c.Get("payload")
+	return uint32(claims.(*utils.Claims).Uid)
+}
+
+func GetPUid(c *gin.Context) uint32 {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		return 0
+	}
+	payload, err := utils.ValidToken(token[7:])
+	if err != nil {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return 0
+	}
+	return uint32(payload.Uid)
 }

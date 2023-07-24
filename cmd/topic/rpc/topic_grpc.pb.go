@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	TopicService_CreateTopic_FullMethodName = "/proto.TopicService/CreateTopic"
 	TopicService_GetTopic_FullMethodName    = "/proto.TopicService/GetTopic"
+	TopicService_PutStar_FullMethodName     = "/proto.TopicService/PutStar"
 )
 
 // TopicServiceClient is the client API for TopicService service.
@@ -29,6 +30,7 @@ const (
 type TopicServiceClient interface {
 	CreateTopic(ctx context.Context, in *CreateTopicRequest, opts ...grpc.CallOption) (*CreateTopicResponse, error)
 	GetTopic(ctx context.Context, in *GetTopicRequest, opts ...grpc.CallOption) (*GetTopicResponse, error)
+	PutStar(ctx context.Context, in *PutStarReq, opts ...grpc.CallOption) (*PutStarResp, error)
 }
 
 type topicServiceClient struct {
@@ -57,12 +59,22 @@ func (c *topicServiceClient) GetTopic(ctx context.Context, in *GetTopicRequest, 
 	return out, nil
 }
 
+func (c *topicServiceClient) PutStar(ctx context.Context, in *PutStarReq, opts ...grpc.CallOption) (*PutStarResp, error) {
+	out := new(PutStarResp)
+	err := c.cc.Invoke(ctx, TopicService_PutStar_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TopicServiceServer is the server API for TopicService service.
 // All implementations should embed UnimplementedTopicServiceServer
 // for forward compatibility
 type TopicServiceServer interface {
 	CreateTopic(context.Context, *CreateTopicRequest) (*CreateTopicResponse, error)
 	GetTopic(context.Context, *GetTopicRequest) (*GetTopicResponse, error)
+	PutStar(context.Context, *PutStarReq) (*PutStarResp, error)
 }
 
 // UnimplementedTopicServiceServer should be embedded to have forward compatible implementations.
@@ -74,6 +86,9 @@ func (UnimplementedTopicServiceServer) CreateTopic(context.Context, *CreateTopic
 }
 func (UnimplementedTopicServiceServer) GetTopic(context.Context, *GetTopicRequest) (*GetTopicResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTopic not implemented")
+}
+func (UnimplementedTopicServiceServer) PutStar(context.Context, *PutStarReq) (*PutStarResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PutStar not implemented")
 }
 
 // UnsafeTopicServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -123,6 +138,24 @@ func _TopicService_GetTopic_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TopicService_PutStar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PutStarReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TopicServiceServer).PutStar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TopicService_PutStar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TopicServiceServer).PutStar(ctx, req.(*PutStarReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TopicService_ServiceDesc is the grpc.ServiceDesc for TopicService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -137,6 +170,10 @@ var TopicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTopic",
 			Handler:    _TopicService_GetTopic_Handler,
+		},
+		{
+			MethodName: "PutStar",
+			Handler:    _TopicService_PutStar_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

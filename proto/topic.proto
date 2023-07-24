@@ -9,6 +9,7 @@ import "code.proto";
 service TopicService {
   rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse) {}
   rpc GetTopic(GetTopicRequest) returns (GetTopicResponse) {}
+  rpc PutStar(PutStarReq) returns (PutStarResp) {}
 }
 
 message CreateTopicRequest {
@@ -23,6 +24,7 @@ message CreateTopicResponse {
 message GetTopicRequest {
   uint32 limit = 1;
   uint32 offset = 2;
+  uint32 uid = 3;
 }
 
 message Topic {
@@ -31,9 +33,20 @@ message Topic {
   string created_at = 3;
   string campus = 4;
   bool verified = 5;
+  bool starred = 6;
+  uint32 star_count = 7;
 }
 
 message GetTopicResponse {
   Code code = 1;
   repeated Topic topics = 2;
+}
+
+message PutStarReq{
+  uint32 uid = 1;
+  uint32 tid = 2;
+}
+
+message PutStarResp{
+  Code code = 1;
 }

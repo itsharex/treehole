@@ -17,17 +17,20 @@ import (
 
 var (
 	Q     = new(Query)
+	Star  *star
 	Topic *topic
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	Star = &Q.Star
 	Topic = &Q.Topic
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:    db,
+		Star:  newStar(db, opts...),
 		Topic: newTopic(db, opts...),
 	}
 }
@@ -35,6 +38,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	Star  star
 	Topic topic
 }
 
@@ -43,6 +47,7 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:    db,
+		Star:  q.Star.clone(db),
 		Topic: q.Topic.clone(db),
 	}
 }
@@ -58,16 +63,19 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:    db,
+		Star:  q.Star.replaceDB(db),
 		Topic: q.Topic.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
+	Star  IStarDo
 	Topic ITopicDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		Star:  q.Star.WithContext(ctx),
 		Topic: q.Topic.WithContext(ctx),
 	}
 }

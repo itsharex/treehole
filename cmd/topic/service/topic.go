@@ -7,7 +7,7 @@ import (
 	"github.com/Jazee6/treehole/cmd/topic/model"
 	"github.com/Jazee6/treehole/cmd/topic/rpc"
 	"github.com/Jazee6/treehole/pkg/rpcs"
-	"log"
+	"gorm.io/gorm"
 )
 
 type TopicService struct{}
@@ -32,28 +32,47 @@ func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest
 	if err != nil {
 		return nil, err
 	}
+
+	//Get Account Info
 	var req pb.TopicInfoReq
+	var tid = make([]uint32, len(finds))
 	req.Uid = make([]uint32, len(finds))
 	for i, find := range finds {
 		req.Uid[i] = find.UID
+		tid[i] = find.ID
 	}
 	info, err := pb.AccountClient.GetTopicInfo(ctx, &req)
 	if err != nil {
 		return nil, err
 	}
+
+	s := dao.Q.Star
+	if request.Uid != 0 {
+
+	}
+	stars, err := s.Where(s.TopicID.In(tid...), s.UID.Eq(request.Uid)).Find()
+	if err != nil {
+		return nil, err
+	}
+
 	var topics = make([]*rpc.Topic, len(finds))
-	log.Println(info.TopicInfo)
 	for i, find := range finds {
 		topicInfo := appendTopicInfo(find.UID, info)
+		for _, star := range stars {
+			if star.TopicID == find.ID {
+				topicInfo.starred = true
+				break
+			}
+		}
 		topics[i] = &rpc.Topic{
 			Id:        find.ID,
 			Content:   find.Content,
 			CreatedAt: find.CreatedAt.String(),
 			Campus:    topicInfo.campusName,
 			Verified:  topicInfo.verified,
+			Starred:   topicInfo.starred,
 		}
 	}
-	log.Println(topics)
 	return &rpc.GetTopicResponse{
 		Code:   rpcs.Code_Success,
 		Topics: topics,
@@ -63,6 +82,7 @@ func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest
 type TopicInfo struct {
 	campusName string
 	verified   bool
+	starred    bool
 }
 
 func appendTopicInfo(uid uint32, info *pb.TopicInfoResp) TopicInfo {
@@ -75,4 +95,31 @@ func appendTopicInfo(uid uint32, info *pb.TopicInfoResp) TopicInfo {
 		}
 	}
 	return topicInfo
+}
+
+func (t TopicService) PutStar(_ context.Context, req *rpc.PutStarReq) (*rpc.PutStarResp, error) {
+	q := dao.Q.Star
+	take, err := q.Where(q.UID.Eq(req.Uid), q.TopicID.Eq(req.Tid)).Take()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	if take != nil {
+		_, err := q.Where(q.UID.Eq(req.Uid), q.TopicID.Eq(req.Tid)).Delete()
+		if err != nil {
+			return nil, err
+		}
+		return &rpc.PutStarResp{
+			Code: rpcs.Code_OKUnStar,
+		}, nil
+	}
+	err = q.Create(&model.Star{
+		UID:     req.Uid,
+		TopicID: req.Tid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.PutStarResp{
+		Code: rpcs.Code_OKStar,
+	}, nil
 }

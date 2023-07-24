@@ -20,5 +20,6 @@ func initRouter(g *gin.Engine) {
 	auth.Use(middleware.Auth())
 	{
 		auth.POST("/topic", handler.CreateTopic, middleware.Recaptcha())
+		auth.PUT("/topic/star/:id", handler.PutStar)
 	}
 }

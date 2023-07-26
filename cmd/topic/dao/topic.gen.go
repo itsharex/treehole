@@ -32,6 +32,7 @@ func newTopic(db *gorm.DB, opts ...gen.DOOption) topic {
 	_topic.Content = field.NewString(tableName, "content")
 	_topic.Comments = field.NewUint32(tableName, "comments")
 	_topic.Stars = field.NewUint32(tableName, "stars")
+	_topic.Status = field.NewUint32(tableName, "status")
 	_topic.CreatedAt = field.NewTime(tableName, "created_at")
 	_topic.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_topic.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -50,6 +51,7 @@ type topic struct {
 	Content   field.String
 	Comments  field.Uint32
 	Stars     field.Uint32
+	Status    field.Uint32
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -74,6 +76,7 @@ func (t *topic) updateTableName(table string) *topic {
 	t.Content = field.NewString(table, "content")
 	t.Comments = field.NewUint32(table, "comments")
 	t.Stars = field.NewUint32(table, "stars")
+	t.Status = field.NewUint32(table, "status")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
 	t.DeletedAt = field.NewField(table, "deleted_at")
@@ -93,12 +96,13 @@ func (t *topic) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *topic) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 8)
+	t.fieldMap = make(map[string]field.Expr, 9)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["uid"] = t.UID
 	t.fieldMap["content"] = t.Content
 	t.fieldMap["comments"] = t.Comments
 	t.fieldMap["stars"] = t.Stars
+	t.fieldMap["status"] = t.Status
 	t.fieldMap["created_at"] = t.CreatedAt
 	t.fieldMap["updated_at"] = t.UpdatedAt
 	t.fieldMap["deleted_at"] = t.DeletedAt

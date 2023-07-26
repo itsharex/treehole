@@ -8,6 +8,7 @@ import (
 	"github.com/Jazee6/treehole/cmd/topic/rpc"
 	"github.com/Jazee6/treehole/pkg/rpcs"
 	"gorm.io/gorm"
+	"time"
 )
 
 type TopicService struct{}
@@ -47,30 +48,35 @@ func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest
 	}
 
 	s := dao.Q.Star
+	var stars []*model.Star
 	if request.Uid != 0 {
-
+		stars, err = s.Where(s.TopicID.In(tid...), s.UID.Eq(request.Uid)).Find()
+		if err != nil {
+			return nil, err
+		}
 	}
-	stars, err := s.Where(s.TopicID.In(tid...), s.UID.Eq(request.Uid)).Find()
-	if err != nil {
-		return nil, err
-	}
-
 	var topics = make([]*rpc.Topic, len(finds))
 	for i, find := range finds {
+		if find.Status != 0 {
+			continue
+		}
 		topicInfo := appendTopicInfo(find.UID, info)
-		for _, star := range stars {
-			if star.TopicID == find.ID {
-				topicInfo.starred = true
-				break
+		if request.Uid != 0 {
+			for _, star := range stars {
+				if star.TopicID == find.ID {
+					topicInfo.starred = true
+					break
+				}
 			}
 		}
 		topics[i] = &rpc.Topic{
 			Id:        find.ID,
 			Content:   find.Content,
-			CreatedAt: find.CreatedAt.String(),
+			CreatedAt: find.CreatedAt.Format(time.RFC3339),
 			Campus:    topicInfo.campusName,
 			Verified:  topicInfo.verified,
 			Starred:   topicInfo.starred,
+			StarCount: find.Stars,
 		}
 	}
 	return &rpc.GetTopicResponse{
@@ -98,28 +104,47 @@ func appendTopicInfo(uid uint32, info *pb.TopicInfoResp) TopicInfo {
 }
 
 func (t TopicService) PutStar(_ context.Context, req *rpc.PutStarReq) (*rpc.PutStarResp, error) {
-	q := dao.Q.Star
-	take, err := q.Where(q.UID.Eq(req.Uid), q.TopicID.Eq(req.Tid)).Take()
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-	if take != nil {
-		_, err := q.Where(q.UID.Eq(req.Uid), q.TopicID.Eq(req.Tid)).Delete()
-		if err != nil {
-			return nil, err
+	var star bool
+	err := dao.Q.Transaction(func(tx *dao.Query) error {
+		take, err := tx.Star.Where(tx.Star.UID.Eq(req.Uid), tx.Star.TopicID.Eq(req.Tid)).Take()
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return err
 		}
-		return &rpc.PutStarResp{
-			Code: rpcs.Code_OKUnStar,
-		}, nil
-	}
-	err = q.Create(&model.Star{
-		UID:     req.Uid,
-		TopicID: req.Tid,
+		if take != nil {
+			if _, err := tx.Star.Where(tx.Star.UID.Eq(req.Uid), tx.Star.TopicID.Eq(req.Tid)).Delete(); err != nil {
+				return err
+			}
+			if _, err := tx.Topic.Where(tx.Topic.ID.Eq(req.Tid)).UpdateSimple(tx.Topic.Stars.Sub(1)); err != nil {
+				return err
+			}
+			return nil
+		}
+		if err := tx.Star.Create(&model.Star{
+			UID:     req.Uid,
+			TopicID: req.Tid,
+		}); err != nil {
+			return err
+		}
+		if _, err := tx.Topic.Where(tx.Topic.ID.Eq(req.Tid)).UpdateSimple(tx.Topic.Stars.Add(1)); err != nil {
+			return err
+		}
+		star = true
+		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
+	if star {
+		return &rpc.PutStarResp{
+			Code: rpcs.Code_OKStar,
+		}, nil
+	}
 	return &rpc.PutStarResp{
-		Code: rpcs.Code_OKStar,
+		Code: rpcs.Code_OKUnStar,
 	}, nil
+}
+
+func (t TopicService) GetStarList(ctx context.Context, req *rpc.GetStarListReq) (*rpc.GetStarListResp, error) {
+	//TODO implement me
+	panic("implement me")
 }

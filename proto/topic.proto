@@ -10,6 +10,7 @@ service TopicService {
   rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse) {}
   rpc GetTopic(GetTopicRequest) returns (GetTopicResponse) {}
   rpc PutStar(PutStarReq) returns (PutStarResp) {}
+  rpc GetStarList(GetStarListReq) returns (GetStarListResp) {}
 }
 
 message CreateTopicRequest {
@@ -49,4 +50,15 @@ message PutStarReq{
 
 message PutStarResp{
   Code code = 1;
+}
+
+message GetStarListReq{
+  uint32 uid = 1;
+  uint32 limit = 2;
+  uint32 offset = 3;
+}
+
+message GetStarListResp{
+  Code code = 1;
+  repeated Topic topics = 2;
 }

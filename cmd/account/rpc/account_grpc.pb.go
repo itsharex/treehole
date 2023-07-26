@@ -24,6 +24,7 @@ const (
 	AccountService_AccountLogin_FullMethodName    = "/proto.AccountService/AccountLogin"
 	AccountService_GetCampusList_FullMethodName   = "/proto.AccountService/GetCampusList"
 	AccountService_GetTopicInfo_FullMethodName    = "/proto.AccountService/GetTopicInfo"
+	AccountService_GetAccountInfo_FullMethodName  = "/proto.AccountService/GetAccountInfo"
 )
 
 // AccountServiceClient is the client API for AccountService service.
@@ -35,6 +36,7 @@ type AccountServiceClient interface {
 	AccountLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	GetCampusList(ctx context.Context, in *CampusListReq, opts ...grpc.CallOption) (*CampusListResp, error)
 	GetTopicInfo(ctx context.Context, in *TopicInfoReq, opts ...grpc.CallOption) (*TopicInfoResp, error)
+	GetAccountInfo(ctx context.Context, in *GetAccountInfoReq, opts ...grpc.CallOption) (*GetAccountInfoResp, error)
 }
 
 type accountServiceClient struct {
@@ -90,6 +92,15 @@ func (c *accountServiceClient) GetTopicInfo(ctx context.Context, in *TopicInfoRe
 	return out, nil
 }
 
+func (c *accountServiceClient) GetAccountInfo(ctx context.Context, in *GetAccountInfoReq, opts ...grpc.CallOption) (*GetAccountInfoResp, error) {
+	out := new(GetAccountInfoResp)
+	err := c.cc.Invoke(ctx, AccountService_GetAccountInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountServiceServer is the server API for AccountService service.
 // All implementations should embed UnimplementedAccountServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type AccountServiceServer interface {
 	AccountLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	GetCampusList(context.Context, *CampusListReq) (*CampusListResp, error)
 	GetTopicInfo(context.Context, *TopicInfoReq) (*TopicInfoResp, error)
+	GetAccountInfo(context.Context, *GetAccountInfoReq) (*GetAccountInfoResp, error)
 }
 
 // UnimplementedAccountServiceServer should be embedded to have forward compatible implementations.
@@ -119,6 +131,9 @@ func (UnimplementedAccountServiceServer) GetCampusList(context.Context, *CampusL
 }
 func (UnimplementedAccountServiceServer) GetTopicInfo(context.Context, *TopicInfoReq) (*TopicInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTopicInfo not implemented")
+}
+func (UnimplementedAccountServiceServer) GetAccountInfo(context.Context, *GetAccountInfoReq) (*GetAccountInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInfo not implemented")
 }
 
 // UnsafeAccountServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -222,6 +237,24 @@ func _AccountService_GetTopicInfo_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccountService_GetAccountInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).GetAccountInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccountService_GetAccountInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).GetAccountInfo(ctx, req.(*GetAccountInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccountService_ServiceDesc is the grpc.ServiceDesc for AccountService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +281,10 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTopicInfo",
 			Handler:    _AccountService_GetTopicInfo_Handler,
+		},
+		{
+			MethodName: "GetAccountInfo",
+			Handler:    _AccountService_GetAccountInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

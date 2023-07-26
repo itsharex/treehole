@@ -17,6 +17,12 @@ import (
 const name = "topic"
 
 func main() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+		}
+	}()
+
 	dao.InitDB()
 	service.InitService()
 

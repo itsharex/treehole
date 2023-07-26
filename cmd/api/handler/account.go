@@ -106,3 +106,14 @@ func GetCampus(c *gin.Context) {
 	}
 	Success(c, resp)
 }
+
+func GetAccountInfo(c *gin.Context) {
+	resp, err := pb.AccountClient.GetAccountInfo(c, &pb.GetAccountInfoReq{
+		Uid: GetUid(c),
+	})
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	Success(c, resp)
+}

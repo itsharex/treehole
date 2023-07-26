@@ -168,3 +168,13 @@ func (c *AccountService) GetTopicInfo(_ context.Context, req *rpc.TopicInfoReq) 
 		TopicInfo: topicInfo,
 	}, nil
 }
+
+func (c *AccountService) GetAccountInfo(_ context.Context, req *rpc.GetAccountInfoReq) (*rpc.GetAccountInfoResp, error) {
+	q := dao.Q.User
+	u := dao.Q.Campu
+	var res *rpc.GetAccountInfoResp
+	if err := q.Where(q.ID.Eq(req.Uid)).Select(q.Verified, u.Name.As("CampusName")).LeftJoin(u, u.ID.EqCol(q.CampusID)).Scan(&res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}

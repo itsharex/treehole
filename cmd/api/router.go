@@ -22,5 +22,6 @@ func initRouter(g *gin.Engine) {
 		auth.POST("/topic", handler.CreateTopic, middleware.Recaptcha())
 		auth.PUT("/topic/star/:id", handler.PutStar)
 		auth.GET("/account", handler.GetAccountInfo)
+		auth.GET("/topic/star/:limit/:offset", handler.GetStarList)
 	}
 }

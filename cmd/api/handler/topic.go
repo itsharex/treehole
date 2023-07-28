@@ -33,7 +33,7 @@ func CreateTopic(c *gin.Context) {
 }
 
 type GetTopicRequest struct {
-	Limit  uint32 `uri:"limit" binding:"required,min=1,max=20"`
+	Limit  uint32 `uri:"limit" binding:"required,min=5,max=20"`
 	Offset uint32 `uri:"offset" binding:"gte=0"`
 }
 
@@ -78,4 +78,27 @@ func PutStar(c *gin.Context) {
 		return
 	}
 	Success(c, star.Code)
+}
+
+type GetStarListRequest struct {
+	Limit  uint32 `uri:"limit" binding:"required,min=5,max=20"`
+	Offset uint32 `uri:"offset" binding:"gte=0"`
+}
+
+func GetStarList(c *gin.Context) {
+	var req GetStarListRequest
+	err := c.BindUri(&req)
+	if err != nil {
+		return
+	}
+	resp, err := pb.TopicClient.GetStarList(c, &pb.GetStarListReq{
+		Uid:    GetUid(c),
+		Limit:  req.Limit,
+		Offset: req.Offset,
+	})
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	Success(c, resp.Topics)
 }

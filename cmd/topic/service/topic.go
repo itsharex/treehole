@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	pb "github.com/Jazee6/treehole/cmd/account/rpc"
 	"github.com/Jazee6/treehole/cmd/topic/dao"
 	"github.com/Jazee6/treehole/cmd/topic/model"
@@ -29,7 +30,7 @@ func (t TopicService) CreateTopic(_ context.Context, request *rpc.CreateTopicReq
 
 func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest) (*rpc.GetTopicResponse, error) {
 	q := dao.Q.Topic
-	finds, err := q.Limit(int(request.Limit)).Offset(int(request.Offset)).Order(q.CreatedAt.Desc()).Find()
+	finds, err := q.Where(q.Status.Eq(0)).Limit(int(request.Limit)).Offset(int(request.Offset)).Order(q.CreatedAt.Desc()).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -57,9 +58,6 @@ func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest
 	}
 	var topics = make([]*rpc.Topic, len(finds))
 	for i, find := range finds {
-		if find.Status != 0 {
-			continue
-		}
 		topicInfo := appendTopicInfo(find.UID, info)
 		if request.Uid != 0 {
 			for _, star := range stars {
@@ -107,7 +105,7 @@ func (t TopicService) PutStar(_ context.Context, req *rpc.PutStarReq) (*rpc.PutS
 	var star bool
 	err := dao.Q.Transaction(func(tx *dao.Query) error {
 		take, err := tx.Star.Where(tx.Star.UID.Eq(req.Uid), tx.Star.TopicID.Eq(req.Tid)).Take()
-		if err != nil && err != gorm.ErrRecordNotFound {
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return err
 		}
 		if take != nil {
@@ -145,6 +143,65 @@ func (t TopicService) PutStar(_ context.Context, req *rpc.PutStarReq) (*rpc.PutS
 }
 
 func (t TopicService) GetStarList(ctx context.Context, req *rpc.GetStarListReq) (*rpc.GetStarListResp, error) {
-	//TODO implement me
-	panic("implement me")
+	q := dao.Q.Topic
+	s := dao.Q.Star
+	stars, err := s.Where(s.UID.Eq(req.Uid)).Select(s.TopicID, s.CreatedAt).Limit(int(req.Limit)).Offset(int(req.Offset)).Order(s.CreatedAt.Desc()).Find()
+	if err != nil {
+		return nil, err
+	}
+	if len(stars) == 0 {
+		return &rpc.GetStarListResp{
+			Code: rpcs.Code_Success,
+		}, nil
+	}
+	var tid = make([]uint32, len(stars))
+	for i, star := range stars {
+		tid[i] = star.TopicID
+	}
+	take, err := q.Where(q.Status.Eq(0), q.ID.In(tid...)).Find()
+	if err != nil {
+		return nil, err
+	}
+	if len(take) == 0 {
+		return &rpc.GetStarListResp{
+			Code: rpcs.Code_Success,
+		}, nil
+	}
+	var takes = make([]*model.Topic, len(take))
+	for i, find := range stars {
+		for _, topic := range take {
+			if find.TopicID == topic.ID {
+				takes[i] = topic
+				break
+			}
+		}
+	}
+
+	var request pb.TopicInfoReq
+	request.Uid = make([]uint32, len(take))
+	for i, find := range take {
+		request.Uid[i] = find.UID
+	}
+	info, err := pb.AccountClient.GetTopicInfo(ctx, &request)
+	if err != nil {
+		return nil, err
+	}
+
+	var topics = make([]*rpc.Topic, len(take))
+	for i, find := range takes {
+		topicInfo := appendTopicInfo(find.UID, info)
+		topics[i] = &rpc.Topic{
+			Id:        find.ID,
+			Content:   find.Content,
+			CreatedAt: find.CreatedAt.Format(time.RFC3339),
+			Campus:    topicInfo.campusName,
+			Verified:  topicInfo.verified,
+			Starred:   true,
+			StarCount: find.Stars,
+		}
+	}
+	return &rpc.GetStarListResp{
+		Code:   rpcs.Code_Success,
+		Topics: topics,
+	}, nil
 }

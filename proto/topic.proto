@@ -11,6 +11,7 @@ service TopicService {
   rpc GetTopic(GetTopicRequest) returns (GetTopicResponse) {}
   rpc PutStar(PutStarReq) returns (PutStarResp) {}
   rpc GetStarList(GetStarListReq) returns (GetStarListResp) {}
+  rpc GetCommentList(GetCommentListReq) returns (GetCommentListResp) {}
 }
 
 message CreateTopicRequest {
@@ -61,4 +62,36 @@ message GetStarListReq{
 message GetStarListResp{
   Code code = 1;
   repeated Topic topics = 2;
+}
+
+message Comment{
+  uint32 id = 1;
+  string content = 2;
+  string created_at = 3;
+  string campus = 4;
+  bool verified = 5;
+  uint32 like = 6;
+  repeated SubComment sub_comments = 7;
+}
+
+message SubComment{
+  uint32 id = 1;
+  string content = 2;
+  string created_at = 3;
+  string campus = 4;
+  bool verified = 5;
+  uint32 like = 6;
+  uint32 root = 7;
+  uint32 to_uid = 8;
+}
+
+message GetCommentListReq{
+  uint32 tid = 1;
+  uint32 limit = 2;
+  uint32 offset = 3;
+}
+
+message GetCommentListResp{
+  Code code = 1;
+  repeated Comment comments = 2;
 }

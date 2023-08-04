@@ -22,7 +22,7 @@ func main() {
 		OutPath:           "./cmd/topic/dao",
 		ModelPkgPath:      "./model",
 		WithUnitTest:      false,
-		FieldNullable:     false,
+		FieldNullable:     true,
 		FieldCoverable:    false,
 		FieldSignable:     true,
 		FieldWithIndexTag: false,

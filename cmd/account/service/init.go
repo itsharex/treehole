@@ -31,7 +31,7 @@ func InitService() {
 	salt = viper.GetString("register.salt")
 	emailMax = viper.GetInt("email.max")
 
-	url, err := redis.ParseURL(viper.GetString("db.redis.dsn"))
+	url, err := redis.ParseURL(viper.GetString("db.redis.account.dsn"))
 	if err != nil {
 		panic(err)
 	}

@@ -13,7 +13,10 @@ db:
     topic:
       dsn: "root:root@tcp(127.0.0.1:3306)/topic?charset=utf8mb4&parseTime=True&loc=Local"
   redis:
-    dsn: "redis://<user>:<password>@<host>:<port>/<db>"
+    account:
+      dsn: "redis://<user>:<password>@<host>:<port>/<db>"
+    topic:
+      dsn: "redis://<user>:<password>@<host>:<port>/<db>"
 
 token:
   expire: 720 #hours

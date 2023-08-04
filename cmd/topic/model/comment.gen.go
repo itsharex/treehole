@@ -19,8 +19,10 @@ type Comment struct {
 	UID       uint32         `gorm:"column:uid;not null" json:"uid"`
 	Content   string         `gorm:"column:content;not null" json:"content"`
 	Like      uint32         `gorm:"column:like;not null" json:"like"`
-	Root      uint32         `gorm:"column:root" json:"root"`
-	ToUID     uint32         `gorm:"column:to_uid" json:"to_uid"`
+	Root      *uint32        `gorm:"column:root" json:"root"`
+	ToTempID  *uint32        `gorm:"column:to_temp_id" json:"to_temp_id"`
+	TempID    uint32         `gorm:"column:temp_id;not null" json:"temp_id"`
+	Status    uint32         `gorm:"column:status;not null" json:"status"`
 	CreatedAt time.Time      `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

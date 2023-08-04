@@ -17,17 +17,17 @@ func TestMain(m *testing.M) {
 }
 
 func TestT(t *testing.T) {
-	url, err := redis.ParseURL(viper.GetString("db.redis.dsn"))
+	url, err := redis.ParseURL(viper.GetString("db.redis.account.dsn"))
 	if err != nil {
 		panic(err)
 	}
 	r := redis.NewClient(url)
 
-	result, err := r.SAdd(context.Background(), "test2", 1).Result()
+	result, err := r.HGet(context.Background(), "test", "test").Uint64()
 	if err != nil {
 		return
 	}
-	println(result)
+	t.Log(result)
 }
 
 func TestT2(t *testing.T) {

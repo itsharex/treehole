@@ -24,6 +24,7 @@ const (
 	TopicService_PutStar_FullMethodName        = "/proto.TopicService/PutStar"
 	TopicService_GetStarList_FullMethodName    = "/proto.TopicService/GetStarList"
 	TopicService_GetCommentList_FullMethodName = "/proto.TopicService/GetCommentList"
+	TopicService_AddComment_FullMethodName     = "/proto.TopicService/AddComment"
 )
 
 // TopicServiceClient is the client API for TopicService service.
@@ -35,6 +36,7 @@ type TopicServiceClient interface {
 	PutStar(ctx context.Context, in *PutStarReq, opts ...grpc.CallOption) (*PutStarResp, error)
 	GetStarList(ctx context.Context, in *GetStarListReq, opts ...grpc.CallOption) (*GetStarListResp, error)
 	GetCommentList(ctx context.Context, in *GetCommentListReq, opts ...grpc.CallOption) (*GetCommentListResp, error)
+	AddComment(ctx context.Context, in *AddCommentReq, opts ...grpc.CallOption) (*AddCommentResp, error)
 }
 
 type topicServiceClient struct {
@@ -90,6 +92,15 @@ func (c *topicServiceClient) GetCommentList(ctx context.Context, in *GetCommentL
 	return out, nil
 }
 
+func (c *topicServiceClient) AddComment(ctx context.Context, in *AddCommentReq, opts ...grpc.CallOption) (*AddCommentResp, error) {
+	out := new(AddCommentResp)
+	err := c.cc.Invoke(ctx, TopicService_AddComment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TopicServiceServer is the server API for TopicService service.
 // All implementations should embed UnimplementedTopicServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type TopicServiceServer interface {
 	PutStar(context.Context, *PutStarReq) (*PutStarResp, error)
 	GetStarList(context.Context, *GetStarListReq) (*GetStarListResp, error)
 	GetCommentList(context.Context, *GetCommentListReq) (*GetCommentListResp, error)
+	AddComment(context.Context, *AddCommentReq) (*AddCommentResp, error)
 }
 
 // UnimplementedTopicServiceServer should be embedded to have forward compatible implementations.
@@ -119,6 +131,9 @@ func (UnimplementedTopicServiceServer) GetStarList(context.Context, *GetStarList
 }
 func (UnimplementedTopicServiceServer) GetCommentList(context.Context, *GetCommentListReq) (*GetCommentListResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommentList not implemented")
+}
+func (UnimplementedTopicServiceServer) AddComment(context.Context, *AddCommentReq) (*AddCommentResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddComment not implemented")
 }
 
 // UnsafeTopicServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -222,6 +237,24 @@ func _TopicService_GetCommentList_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TopicService_AddComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCommentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TopicServiceServer).AddComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TopicService_AddComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TopicServiceServer).AddComment(ctx, req.(*AddCommentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TopicService_ServiceDesc is the grpc.ServiceDesc for TopicService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +281,10 @@ var TopicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCommentList",
 			Handler:    _TopicService_GetCommentList_Handler,
+		},
+		{
+			MethodName: "AddComment",
+			Handler:    _TopicService_AddComment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

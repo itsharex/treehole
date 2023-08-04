@@ -15,4 +15,5 @@ enum Code{
   ErrUserNotExist = 40005;
   ErrPasswordErr = 40006;
   ErrRecaptchaErr = 40007;
+  ErrTopicNotFound = 40008;
 }

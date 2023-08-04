@@ -33,7 +33,9 @@ func newComment(db *gorm.DB, opts ...gen.DOOption) comment {
 	_comment.Content = field.NewString(tableName, "content")
 	_comment.Like = field.NewUint32(tableName, "like")
 	_comment.Root = field.NewUint32(tableName, "root")
-	_comment.ToUID = field.NewUint32(tableName, "to_uid")
+	_comment.ToTempID = field.NewUint32(tableName, "to_temp_id")
+	_comment.TempID = field.NewUint32(tableName, "temp_id")
+	_comment.Status = field.NewUint32(tableName, "status")
 	_comment.CreatedAt = field.NewTime(tableName, "created_at")
 	_comment.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_comment.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -53,7 +55,9 @@ type comment struct {
 	Content   field.String
 	Like      field.Uint32
 	Root      field.Uint32
-	ToUID     field.Uint32
+	ToTempID  field.Uint32
+	TempID    field.Uint32
+	Status    field.Uint32
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -79,7 +83,9 @@ func (c *comment) updateTableName(table string) *comment {
 	c.Content = field.NewString(table, "content")
 	c.Like = field.NewUint32(table, "like")
 	c.Root = field.NewUint32(table, "root")
-	c.ToUID = field.NewUint32(table, "to_uid")
+	c.ToTempID = field.NewUint32(table, "to_temp_id")
+	c.TempID = field.NewUint32(table, "temp_id")
+	c.Status = field.NewUint32(table, "status")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
 	c.DeletedAt = field.NewField(table, "deleted_at")
@@ -99,14 +105,16 @@ func (c *comment) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *comment) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 10)
+	c.fieldMap = make(map[string]field.Expr, 12)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["tid"] = c.Tid
 	c.fieldMap["uid"] = c.UID
 	c.fieldMap["content"] = c.Content
 	c.fieldMap["like"] = c.Like
 	c.fieldMap["root"] = c.Root
-	c.fieldMap["to_uid"] = c.ToUID
+	c.fieldMap["to_temp_id"] = c.ToTempID
+	c.fieldMap["temp_id"] = c.TempID
+	c.fieldMap["status"] = c.Status
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
 	c.fieldMap["deleted_at"] = c.DeletedAt

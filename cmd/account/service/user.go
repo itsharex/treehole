@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"github.com/Jazee6/treehole/cmd/account/dao"
 	"github.com/Jazee6/treehole/cmd/account/model"
@@ -38,7 +39,7 @@ func (c *AccountService) AccountRegister(ctx context.Context, request *rpc.Regis
 
 	q := dao.Q.User
 	user, err := q.Where(q.Email.Eq(request.Email)).Take()
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	if user != nil {
@@ -71,7 +72,7 @@ func (c *AccountService) SendCaptcha(ctx context.Context, request *rpc.SendCaptc
 	// 验证邮箱是否已经注册
 	q := dao.Q.User
 	user, err := q.Where(q.Email.Eq(request.Email)).Take()
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	if user != nil {
@@ -132,7 +133,7 @@ func (c *AccountService) AccountLogin(_ context.Context, request *rpc.LoginReque
 	q := dao.Q.User
 	u, err := q.Where(q.Email.Eq(request.Email)).Take()
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &rpc.LoginResponse{
 				Code: rpcs.Code_ErrUserNotExist,
 			}, nil

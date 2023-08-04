@@ -9,16 +9,24 @@ import (
 	"github.com/Jazee6/treehole/cmd/topic/rpc"
 	"github.com/Jazee6/treehole/pkg/rpcs"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
 type TopicService struct{}
 
-func (t TopicService) CreateTopic(_ context.Context, request *rpc.CreateTopicRequest) (*rpc.CreateTopicResponse, error) {
+func (t TopicService) CreateTopic(ctx context.Context, request *rpc.CreateTopicRequest) (*rpc.CreateTopicResponse, error) {
 	q := dao.Q.Topic
-	err := q.Create(&model.Topic{
-		UID:     request.Uid,
-		Content: request.Content,
+	err := dao.Q.Transaction(func(tx *dao.Query) error {
+		var topic = &model.Topic{
+			UID:     request.Uid,
+			Content: request.Content,
+		}
+		err := q.Create(topic)
+		if err != nil {
+			return err
+		}
+		return r.HSet(ctx, strconv.Itoa(int(topic.ID)), request.Uid, 1).Err()
 	})
 	if err != nil {
 		return nil, err
@@ -47,33 +55,31 @@ func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest
 	if err != nil {
 		return nil, err
 	}
+	var infoMap = make(map[uint32]*pb.TopicInfo)
+	for _, v := range info.TopicInfo {
+		infoMap[v.Uid] = v
+	}
 
 	s := dao.Q.Star
 	var stars []*model.Star
-	if request.Uid != 0 {
-		stars, err = s.Where(s.TopicID.In(tid...), s.UID.Eq(request.Uid)).Find()
-		if err != nil {
-			return nil, err
-		}
+	stars, err = s.Where(s.TopicID.In(tid...), s.UID.Eq(request.Uid)).Find()
+	if err != nil {
+		return nil, err
 	}
+	var starsMap = make(map[uint32]*model.Star)
+	for _, v := range stars {
+		starsMap[v.TopicID] = v
+	}
+
 	var topics = make([]*rpc.Topic, len(finds))
 	for i, find := range finds {
-		topicInfo := appendTopicInfo(find.UID, info)
-		if request.Uid != 0 {
-			for _, star := range stars {
-				if star.TopicID == find.ID {
-					topicInfo.starred = true
-					break
-				}
-			}
-		}
 		topics[i] = &rpc.Topic{
 			Id:        find.ID,
 			Content:   find.Content,
 			CreatedAt: find.CreatedAt.Format(time.RFC3339),
-			Campus:    topicInfo.campusName,
-			Verified:  topicInfo.verified,
-			Starred:   topicInfo.starred,
+			Campus:    infoMap[find.UID].CampusName,
+			Verified:  infoMap[find.UID].Verified,
+			Starred:   starsMap[find.ID] != nil,
 			StarCount: find.Stars,
 		}
 	}
@@ -81,24 +87,6 @@ func (t TopicService) GetTopic(ctx context.Context, request *rpc.GetTopicRequest
 		Code:   rpcs.Code_Success,
 		Topics: topics,
 	}, nil
-}
-
-type TopicInfo struct {
-	campusName string
-	verified   bool
-	starred    bool
-}
-
-func appendTopicInfo(uid uint32, info *pb.TopicInfoResp) TopicInfo {
-	var topicInfo TopicInfo
-	for _, user := range info.TopicInfo {
-		if user.Uid == uid {
-			topicInfo.campusName = user.CampusName
-			topicInfo.verified = user.Verified
-			break
-		}
-	}
-	return topicInfo
 }
 
 func (t TopicService) PutStar(_ context.Context, req *rpc.PutStarReq) (*rpc.PutStarResp, error) {
@@ -149,55 +137,44 @@ func (t TopicService) GetStarList(ctx context.Context, req *rpc.GetStarListReq) 
 	if err != nil {
 		return nil, err
 	}
-	if len(stars) == 0 {
-		return &rpc.GetStarListResp{
-			Code: rpcs.Code_Success,
-		}, nil
-	}
+
 	var tid = make([]uint32, len(stars))
 	for i, star := range stars {
 		tid[i] = star.TopicID
 	}
-	take, err := q.Where(q.Status.Eq(0), q.ID.In(tid...)).Find()
+	topic, err := q.Where(q.Status.Eq(0), q.ID.In(tid...)).Find()
 	if err != nil {
 		return nil, err
 	}
-	if len(take) == 0 {
-		return &rpc.GetStarListResp{
-			Code: rpcs.Code_Success,
-		}, nil
-	}
-	var takes = make([]*model.Topic, len(take))
-	for i, find := range stars {
-		for _, topic := range take {
-			if find.TopicID == topic.ID {
-				takes[i] = topic
-				break
-			}
-		}
+	var topicMap = make(map[uint32]*model.Topic)
+	for _, v := range topic {
+		topicMap[v.ID] = v
 	}
 
 	var request pb.TopicInfoReq
-	request.Uid = make([]uint32, len(take))
-	for i, find := range take {
+	request.Uid = make([]uint32, len(topic))
+	for i, find := range topic {
 		request.Uid[i] = find.UID
 	}
 	info, err := pb.AccountClient.GetTopicInfo(ctx, &request)
 	if err != nil {
 		return nil, err
 	}
+	var infoMap = make(map[uint32]*pb.TopicInfo)
+	for _, v := range info.TopicInfo {
+		infoMap[v.Uid] = v
+	}
 
-	var topics = make([]*rpc.Topic, len(take))
-	for i, find := range takes {
-		topicInfo := appendTopicInfo(find.UID, info)
+	var topics = make([]*rpc.Topic, len(topic))
+	for i, star := range stars {
 		topics[i] = &rpc.Topic{
-			Id:        find.ID,
-			Content:   find.Content,
-			CreatedAt: find.CreatedAt.Format(time.RFC3339),
-			Campus:    topicInfo.campusName,
-			Verified:  topicInfo.verified,
+			Id:        star.TopicID,
+			Content:   topicMap[star.TopicID].Content,
+			CreatedAt: topicMap[star.TopicID].CreatedAt.Format(time.RFC3339),
+			Campus:    infoMap[topicMap[star.TopicID].UID].CampusName,
+			Verified:  infoMap[topicMap[star.TopicID].UID].Verified,
 			Starred:   true,
-			StarCount: find.Stars,
+			StarCount: topicMap[star.TopicID].Stars,
 		}
 	}
 	return &rpc.GetStarListResp{

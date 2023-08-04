@@ -4,6 +4,7 @@ import (
 	pb "github.com/Jazee6/treehole/cmd/topic/rpc"
 	"github.com/Jazee6/treehole/pkg/rpcs"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -46,7 +47,7 @@ func GetTopic(c *gin.Context) {
 	resp, err := pb.TopicClient.GetTopic(c, &pb.GetTopicRequest{
 		Limit:  req.Limit,
 		Offset: req.Offset,
-		Uid:    GetPUid(c),
+		Uid:    GetUid(c),
 	})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -101,4 +102,32 @@ func GetStarList(c *gin.Context) {
 		return
 	}
 	Success(c, resp.Topics)
+}
+
+type AddCommentReq struct {
+	Tid      uint32  `json:"tid" binding:"required,number,min=1"`
+	Content  string  `json:"content" binding:"required,max=1024,min=1"`
+	Root     *uint32 `json:"root"`
+	ToTempId *uint32 `json:"to_temp_id"`
+}
+
+func AddComment(c *gin.Context) {
+	var req AddCommentReq
+	err := c.BindJSON(&req)
+	if err != nil {
+		log.Printf("bind json err: %v", err)
+		return
+	}
+	resp, err := pb.TopicClient.AddComment(c, &pb.AddCommentReq{
+		Uid:      GetUid(c),
+		Tid:      req.Tid,
+		Content:  req.Content,
+		Root:     req.Root,
+		ToTempId: req.ToTempId,
+	})
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	Success(c, resp.Code)
 }
